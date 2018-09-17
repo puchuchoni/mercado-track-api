@@ -9,8 +9,8 @@ class Http {
     this.http = instance
   }
 
-  getArticle (id, market = 'MLA') {
-    return this.http.get(`/items/${market}${id}`, {
+  getArticle (id) {
+    return this.http.get(`/items/${id}`, {
       responseType: 'json'
     }).then(res => res.data)
   }

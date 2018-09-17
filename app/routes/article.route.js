@@ -2,7 +2,7 @@ const http = require('../../utils/http')
 const { Article, Snapshot } = require('../models')
 
 exports.Follow = async (req, res) => {
-  const raw = await http.getArticle(req.params.id)
+  const raw = await http.getArticle(req.body.id)
   const snapshot = new Snapshot({
     price: raw.price,
     date: new Date()
