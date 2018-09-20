@@ -4,7 +4,8 @@ const mongoose = require('mongoose')
 const hidden = require('./utils/hidden')
 const routes = require('./app/routes')
 const cors = require('cors')
-
+const cron = require('node-cron')
+const syncPrices = require('./app/jobs/syncPrices')
 const app = express()
 const router = express.Router()
 const port = hidden.port
@@ -24,7 +25,9 @@ router.route('/articles/:id')
   .delete(routes.article.Delete)
   .post(routes.article.AddSnapshot)
 
-app.use('/api', router)
+router.route('/sync')
+  .post(syncPrices.syncPrices)
 
+app.use('/api', router)
 app.listen(port)
 console.log('Mercado Track Api is running on port:' + port)
