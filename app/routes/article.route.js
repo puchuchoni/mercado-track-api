@@ -25,7 +25,7 @@ exports.GetAll = (req, res) => {
 }
 
 exports.GetById = (req, res) => {
-  Article.find({ id: req.params.id }, (err, article) => {
+  Article.find({ id: req.params.id }, (err, [ article ]) => {
     if (err) res.send(err)
     else res.json(article)
   })
