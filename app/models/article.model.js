@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const Snapshot = require('./snapshot.model')
 
-let ArticleSchema = new Schema({
+const ArticleSchema = new Schema({
   currency_id: String,
   id: String,
   title: String,
