@@ -1,9 +1,5 @@
 const http = require('../../utils/http')
-const { Article, Snapshot } = require('../models')
-
-const getLastPrice = (article) => {
-  return article.history.length === 0 ? 0 : article.history[article.history.length - 1].price
-}
+const { Article } = require('../models')
 
 exports.syncPrices = async (req, res) => {
   const articles = await Article.find((err, articles) => {
@@ -15,34 +11,31 @@ exports.syncPrices = async (req, res) => {
     try {
       if (article.id) {
         const raw = await http.getArticle(article.id)
-        let newData = false
-        let newPrice = false
-        const isEqual = Object.keys(article)
-          .filter(prop => !prop.includes('_'))
-          .every(prop => article._doc[prop] === raw[prop])
+        let hasNewPrice = false
+        const hasNewData = !(Object.keys(article._doc)
+          .filter(prop => !prop.includes('_') && !prop.includes('history'))
+          .every(prop => article._doc[prop] === raw[prop]))
 
         //  update article data
-        if (!isEqual) {
-          Object.assign(article, raw)
-          newData = true
+        if (hasNewData) {
+          Object.keys(article._doc).map(function (key) {
+            if (raw.hasOwnProperty(key)) {
+              article[key] = raw[key]
+            }
+          })
         }
 
         //  update snapshot
-        if (raw.price !== getLastPrice(article)) {
-          newPrice = true
-          article.history.push(new Snapshot({
-            price: raw.price,
-            date: new Date()
-          }))
+        if (raw.price !== article.getLastPrice()) {
+          hasNewPrice = true
+          article.updatePrice(raw.price)
         }
 
-        if (newData || newPrice) {
+        if (hasNewData || hasNewPrice) {
           article.save((err) => {
             if (err) console.log(err)
           })
         }
-
-        return article
       }
     } catch (error) {
       console.log(error)
