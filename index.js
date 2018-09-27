@@ -5,7 +5,7 @@ const hidden = require('./utils/hidden')
 const routes = require('./app/routes')
 const cors = require('cors')
 const cron = require('node-cron')
-const syncPrices = require('./app/jobs/syncPrices')
+const sync = require('./app/jobs/sync')
 const app = express()
 const router = express.Router()
 const port = hidden.port
@@ -26,8 +26,13 @@ router.route('/articles/:id')
   .post(routes.article.AddSnapshot)
 
 router.route('/sync')
-  .post(syncPrices.syncPrices)
+  .post(sync.syncData)
 
 app.use('/api', router)
 app.listen(port)
 console.log('Mercado Track Api is running on port:' + port)
+
+cron.schedule('*/45 * * * *', () => {
+  console.log('Run sync...')
+  sync.syncData();
+})
