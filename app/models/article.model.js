@@ -12,4 +12,16 @@ const ArticleSchema = new Schema({
   history: [ Snapshot.schema ]
 })
 
+ArticleSchema.methods.getLastPrice = function () {
+  const lastSnapshot = this.history[this.history.length - 1]
+  return lastSnapshot && lastSnapshot.price
+}
+
+ArticleSchema.methods.updatePrice = function (price) {
+  this.history.push(new Snapshot({
+    price: price,
+    date: new Date()
+  }))
+}
+
 module.exports = mongoose.model('Article', ArticleSchema)
