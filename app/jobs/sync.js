@@ -1,41 +1,33 @@
 const http = require('../../utils/http')
 const { Article } = require('../models')
 
-exports.syncData = async () => {
-  const articles = await Article.find((err, articles) => {
-    if (err) console.log(err)
-    else return articles
-  })
+exports.syncData = async (req, res) => {
+  let articles
+  try {
+    articles = await Article.find((err, articles) => {
+      if (err) console.log(err)
+      else return articles
+    })
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
 
   const promises = articles.map(async article => {
     try {
-      if (article.id) {
-        const raw = await http.getArticle(article.id)
-        let hasNewPrice = false
-        const hasNewData = !(Object.keys(article._doc)
-          .filter(prop => !prop.includes('_') && !prop.includes('history'))
-          .every(prop => article._doc[prop] === raw[prop]))
+      const raw = await http.getArticle(article.id)
+      Object.keys(article._doc).forEach(key => {
+        if (key in raw) article[key] = raw[key]
+      })
 
-        //  update article data
-        if (hasNewData) {
-          Object.keys(article._doc).map(function (key) {
-            if (raw.hasOwnProperty(key)) {
-              article[key] = raw[key]
-            }
-          })
-        }
+      if (raw.price !== article.getLastPrice()) {
+        article.updatePrice(raw.price)
+      }
 
-        //  update snapshot
-        if (raw.price !== article.getLastPrice()) {
-          hasNewPrice = true
-          article.updatePrice(raw.price)
-        }
-
-        if (hasNewData || hasNewPrice) {
-          article.save((err) => {
-            if (err) console.log(err)
-          })
-        }
+      if (article.isModified()) {
+        article.save((err) => {
+          if (err) console.log(err)
+        })
       }
     } catch (error) {
       console.log(error)
@@ -44,5 +36,6 @@ exports.syncData = async () => {
 
   Promise.all(promises).then(() => {
     console.log('Sync finished...')
+    res.sendStatus(200)
   })
 }
