@@ -4,7 +4,8 @@
   "description": "Internal Api for Mercado Track",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint \"app/**/*.js\"",
+    "lint": "eslint index.js app/**",
+    "lint-fix": "eslint index.js app/** --fix",
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

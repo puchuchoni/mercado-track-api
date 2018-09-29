@@ -35,5 +35,5 @@ logger.info('Mercado Track Api is running on port:' + port)
 
 cron.schedule('*/45 * * * *', () => {
   logger.info('Run sync...')
-  sync.syncData();
+  sync.syncData()
 })
