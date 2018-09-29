@@ -1,7 +1,7 @@
 const http = require('../../utils/http')
 const { Article } = require('../models')
 
-exports.syncData = async (req, res) => {
+exports.syncData = async () => {
   const articles = await Article.find((err, articles) => {
     if (err) console.log(err)
     else return articles
@@ -42,8 +42,7 @@ exports.syncData = async (req, res) => {
     }
   })
 
-  Promise.all(promises).then(values => {
+  Promise.all(promises).then(() => {
     console.log('Sync finished...')
-    //res.send(articles)
   })
 }
