@@ -9,6 +9,7 @@ const sync = require('./app/jobs/sync')
 const app = express()
 const router = express.Router()
 const port = hidden.port
+const logger = require('./utils/logger')
 
 mongoose.connect(hidden.dbUrl, { useNewUrlParser: true })
 
@@ -30,9 +31,9 @@ router.route('/sync')
 
 app.use('/api', router)
 app.listen(port)
-console.log('Mercado Track Api is running on port:' + port)
+logger.info('Mercado Track Api is running on port:' + port)
 
 cron.schedule('*/45 * * * *', () => {
-  console.log('Run sync...')
+  logger.info('Run sync...')
   sync.syncData();
 })

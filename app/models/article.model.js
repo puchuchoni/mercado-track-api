@@ -9,7 +9,7 @@ const ArticleSchema = new Schema({
   status: String,
   permalink: String,
   thumbnail: String,
-  history: [ Snapshot.schema ]
+  history: [Snapshot.schema]
 })
 
 ArticleSchema.methods.getLastPrice = function () {
