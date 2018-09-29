@@ -37,6 +37,7 @@
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "node-cron": "^2.0.1",
     "nodemon": "^1.18.4"
   }
 }
