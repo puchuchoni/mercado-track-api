@@ -3,7 +3,9 @@ const { Article } = require('../models')
 const logger = require('../utils/logger')
 
 exports.syncData = async (req, res) => {
+  logger.info('Sync started')
   let articles
+  let updatedPrices = 0
   try {
     articles = await Article.find((err, articles) => {
       if (err) logger.error(err)
@@ -17,6 +19,7 @@ exports.syncData = async (req, res) => {
       })
 
       if (raw.price !== article.getLastPrice()) {
+        updatedPrices++
         article.updatePrice(raw.price)
       }
 
@@ -29,7 +32,7 @@ exports.syncData = async (req, res) => {
     })
 
     Promise.all(promises).then(() => {
-      logger.info('Sync finished...')
+      logger.info(`Sync finished - from ${articles.length} articles, ${updatedPrices} articles have modified their prices.`)
       res.sendStatus(200)
     })
   } catch (error) {
