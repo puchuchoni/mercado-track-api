@@ -1,13 +1,15 @@
-const hidden = require('./hidden.js')
-const winston = require('winston')
-require('winston-loggly-bulk')
+const hidden = require('./hidden')
+var winston = require('winston')
+var { Loggly } = require('winston-loggly-bulk')
 
-winston.add(winston.transports.Loggly, {
-  token: hidden.logglyToken,
-  subdomain: hidden.subdomain,
-  tags: ['Winston-NodeJS'],
+var transportsObject = new Loggly({
+  inputToken: hidden.logglyToken,
+  subdomain: hidden.logglySubdomain,
+  tags: ['nodejs'],
   json: true
 })
+
+winston.add(transportsObject, null, true)
 
 module.exports = {
   log: (message) => winston.log(message),
