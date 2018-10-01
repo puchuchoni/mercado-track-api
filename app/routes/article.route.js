@@ -1,4 +1,4 @@
-const http = require('../../utils/http')
+const http = require('../utils/http')
 const { Article, Snapshot } = require('../models')
 
 exports.Follow = async (req, res) => {
