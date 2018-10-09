@@ -29,9 +29,9 @@ router.route('/articles/:id')
 router.route('/sync')
   .post(sync.syncData)
 
-app.use('/api', router)
+app.use('/', router)
 app.listen(port)
-logger.info('Mercado Track Api is running on port:' + port)
+logger.info(`Mercado Track API running on port: ${port}`)
 
 cron.schedule('*/45 * * * *', () => {
   sync.syncData()
