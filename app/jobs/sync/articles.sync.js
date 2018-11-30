@@ -52,11 +52,11 @@ function run () {
   }
 }
 
-async function articlesSyncRoute (req, res) {
+function articlesSyncRoute (req, res) {
   if (running) return res.status(403).send({ message: `Sync already running` })
   res.status(202).send({ message: `Sync triggered successfully` })
   console.log('Triggered sync')
-  await articlesSync()
+  articlesSync()
 }
 
 module.exports = { articlesSyncRoute, run }
