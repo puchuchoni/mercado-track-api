@@ -3,7 +3,6 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const hidden = require('./app/utils/hidden')
 const routes = require('./app/routes')
-// const cron = require('node-cron')
 const sync = require('./app/jobs/sync')
 const collector = require('./app/jobs/collector')
 const app = express()
@@ -27,7 +26,7 @@ router.route('/articles/:id')
   .delete(routes.article.Delete)
 
 router.route('/sync/articles')
-  .post(sync.articlesSync)
+  .post(sync.articlesSyncRoute)
 
 router.route('/collector/categories')
   .post(collector.getAllCategories)
@@ -39,26 +38,5 @@ app.use('/', router)
 app.listen(port)
 logger.info(`Mercado Track API running on port: ${port}`)
 
-// cron.schedule('0 0 6,18 * * *', () => {
-//   logger.info(`Dispatch sync Job`)
-//   sync.articlesSync()
-// })
-
-// cron.schedule('0 0 0 * * *', () => {
-//   logger.info(`Dispatch articles collector Job`)
-//   collector.fetchAllArticles()
-// })
-
-// cron.schedule('* * 1 * *', () => {
-//   logger.info(`Dispatch categories collector Job`)
-//   collector.getAllCategories()
-// })
-
-// Process Categories
-// require('./app/jobs/collector').getAllCategories().then(() => process.exit())
-
-// Process Articles
-// require('./app/jobs/collector').fetchAllArticles().then(() => process.exit())
-
-// Article Sync
-// require('./app/jobs/sync').articlesSync().then(() => process.exit())
+// Articles sync
+sync.run()
