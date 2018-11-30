@@ -12,6 +12,7 @@ const port = hidden.port
 const logger = require('./app/utils/logger')
 const cors = require('cors')
 
+mongoose.set('useCreateIndex', true)
 mongoose.connect(hidden.dbUrl, { useNewUrlParser: true })
 
 app.use(bodyParser.urlencoded({ extended: true }))
