@@ -40,4 +40,4 @@ app.listen(port)
 logger.info(`Mercado Track API running on port: ${port}`)
 
 // Articles sync
-sync.run()
+//sync.run()

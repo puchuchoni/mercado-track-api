@@ -2,11 +2,13 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const ProcessSchema = new Schema({
-  id: { type: String, unique: true, required: true },
   name: String,
   status: String,
   itemsProcessed: Number,
-  startDate: Date,
+  startDate: {
+    type: Date,
+    default: new Date()
+  },
   endDate: Date
 })
 
@@ -15,4 +17,4 @@ ProcessSchema.methods.getLastPrice = function () {
   return lastSnapshot && lastSnapshot.price
 }
 
-module.exports = mongoose.model('Article', ArticleSchema)
+module.exports = mongoose.model('ProcessRecord', ProcessSchema)

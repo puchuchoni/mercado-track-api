@@ -1,5 +1,5 @@
-const { http, logger, createOrUpdateArticle, paginateArticles } = require('../../utils')
-const { Article } = require('../../models')
+const { http, logger, createOrUpdateArticle, paginateArticles , enums } = require('../../utils')
+const { Article, ProcessRecord} = require('../../models')
 let running = false
 
 async function processArticleChunk (articles) {
@@ -24,19 +24,43 @@ async function articlesSync (singleRun = false) {
     const limit = 1000
     let skip = 0
     const count = await Article.estimatedDocumentCount().exec()
+    let processRecord = new ProcessRecord({
+      name: enums.processNames.priceSync,
+      status: enums.processStatus.running,
+      startDate: new Date
+    })
+    processRecord.save((err, doc) => {
+      if (err) reject(err)
+      else {
+        processRecord = doc
+      }
+    })
+
     let articles = await paginateArticles({})
-    while (articles.length) {
+    //while (articles.length) {
       await processArticleChunk(articles)
       skip += 1000
       const percentage = (skip * 100 / count).toFixed(3)
       logger.info(`[Sync]: ${skip}/${count} - ${percentage}%`)
       articles = await paginateArticles({ skip, limit })
-    }
+    //}
+
+    processRecord.endDate = new Date()
+    processRecord.status = enums.processStatus.finished
+    processRecord.itemsProcessed = articles.length
+    processRecord.save((err, doc) => {
+      if (err) reject(err)
+      else {
+        processRecord = doc
+      }
+    })
+
     if (singleRun) {
       running = false
     } else {
       articlesSync()
     }
+
   } catch (error) {
     logger.error(`[Error Articles sync]: ${error.message}`)
     running = false
