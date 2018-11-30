@@ -1,4 +1,4 @@
-const { http, paginateArticles } = require('../utils')
+const { http, paginateArticles, searchArticles } = require('../utils')
 const { Article, Snapshot } = require('../models')
 const helper = require('../utils/mongo.helper')
 
@@ -10,13 +10,26 @@ exports.Follow = async (req, res) => {
 
 exports.GetAll = async (req, res) => {
   const { skip, limit } = parseSkipAndLimit(req.query)
-  const fields = '-_id -__v'
+  const { search } = req.query
+  /* search */
+  if (search) {
+    try {
+      const results = await searchArticles({ search, skip, limit })
+      res.send(results)
+    } catch (err) {
+      const fail = { msg: `[GET Error] Query: ${search} - ${err}` }
+      res.status(500).send(fail)
+      console.error(fail.msg)
+    }
+    return
+  }
+  /* get all */
   try {
     const fullResponse = {
       skip,
       limit,
       total: await Article.estimatedDocumentCount(),
-      page: await paginateArticles({ skip, limit, fields })
+      page: await paginateArticles({ skip, limit })
     }
     res.json(fullResponse)
   } catch (err) {
