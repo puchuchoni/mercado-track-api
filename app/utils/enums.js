@@ -1,6 +1,6 @@
 const processStatus = {
-  running: "Running",
-  finished: "Finished"
+  running: 'Running',
+  finished: 'Finished'
 }
 
 const processNames = {

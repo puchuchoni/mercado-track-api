@@ -1,5 +1,5 @@
-const { http, logger, createOrUpdateArticle, paginateArticles , enums } = require('../../utils')
-const { Article, ProcessRecord} = require('../../models')
+const { http, logger, createOrUpdateArticle, paginateArticles, enums } = require('../../utils')
+const { Article, ProcessRecord } = require('../../models')
 let running = false
 
 async function processArticleChunk (articles) {
@@ -23,34 +23,39 @@ async function articlesSync (singleRun = false) {
     running = true
     const limit = 1000
     let skip = 0
-    const count = await Article.estimatedDocumentCount().exec()
+    const documentCount = await Article.estimatedDocumentCount().exec()
     let processRecord = new ProcessRecord({
       name: enums.processNames.priceSync,
       status: enums.processStatus.running,
-      startDate: new Date
+      startDate: new Date()
     })
     processRecord.save((err, doc) => {
-      if (err) reject(err)
-      else {
+      if (err) {
+        logger.error(`[Error Articles sync]: ${err.message}`)
+      } else {
         processRecord = doc
       }
     })
 
     let articles = await paginateArticles({})
-    //while (articles.length) {
+    while (articles.length) {
       await processArticleChunk(articles)
       skip += 1000
-      const percentage = (skip * 100 / count).toFixed(3)
-      logger.info(`[Sync]: ${skip}/${count} - ${percentage}%`)
+      const percentage = (skip * 100 / documentCount).toFixed(3)
+      logger.info(`[Sync]: ${skip}/${documentCount} - ${percentage}%`)
       articles = await paginateArticles({ skip, limit })
-    //}
+    }
 
     processRecord.endDate = new Date()
     processRecord.status = enums.processStatus.finished
-    processRecord.itemsProcessed = articles.length
+    processRecord.itemsProcessed = documentCount
+    const dateDiff = processRecord.endDate - processRecord.startDate
+    processRecord.processedHours = Math.floor((dateDiff % 86400000) / 3600000)
+
     processRecord.save((err, doc) => {
-      if (err) reject(err)
-      else {
+      if (err) {
+        logger.error(`[Error Articles sync]: ${err.message}`)
+      } else {
         processRecord = doc
       }
     })
@@ -60,7 +65,6 @@ async function articlesSync (singleRun = false) {
     } else {
       articlesSync()
     }
-
   } catch (error) {
     logger.error(`[Error Articles sync]: ${error.message}`)
     running = false

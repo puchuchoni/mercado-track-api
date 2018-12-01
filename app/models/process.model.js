@@ -9,12 +9,8 @@ const ProcessSchema = new Schema({
     type: Date,
     default: new Date()
   },
-  endDate: Date
+  endDate: Date,
+  processedHours: Number
 })
-
-ProcessSchema.methods.getLastPrice = function () {
-  const lastSnapshot = this.history[this.history.length - 1]
-  return lastSnapshot && lastSnapshot.price
-}
 
 module.exports = mongoose.model('ProcessRecord', ProcessSchema)
