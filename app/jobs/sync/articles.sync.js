@@ -24,6 +24,7 @@ async function articlesSync (singleRun = false) {
     const limit = 1000
     let skip = 0
     const documentCount = await Article.estimatedDocumentCount().exec()
+
     let processRecord = new ProcessRecord({
       name: enums.processNames.priceSync,
       status: enums.processStatus.running,
@@ -41,7 +42,7 @@ async function articlesSync (singleRun = false) {
     while (articles.length) {
       await processArticleChunk(articles)
       skip += 1000
-      const percentage = (skip * 100 / documentCount).toFixed(3)
+      const percentage = Math.floor((skip * 100 / documentCount)).toFixed(3)
       logger.info(`[Sync]: ${skip}/${documentCount} - ${percentage}%`)
       articles = await paginateArticles({ skip, limit })
     }
