@@ -1,4 +1,4 @@
-const { http, logger, createOrUpdateArticle, paginateArticles, enums } = require('../../utils')
+const { http, logger, createOrUpdateArticle, paginateArticles, constants } = require('../../utils')
 const { Article, ProcessRecord } = require('../../models')
 let running = false
 
@@ -24,19 +24,8 @@ async function articlesSync (singleRun = false) {
     const limit = 1000
     let skip = 0
     const documentCount = await Article.estimatedDocumentCount().exec()
-
-    let processRecord = new ProcessRecord({
-      name: enums.processNames.priceSync,
-      status: enums.processStatus.running,
-      startDate: new Date()
-    })
-    processRecord.save((err, doc) => {
-      if (err) {
-        logger.error(`[Error Articles sync]: ${err.message}`)
-      } else {
-        processRecord = doc
-      }
-    })
+    const processRecord = new ProcessRecord({ name: constants.processNames.priceSync })
+    await processRecord.begin()
 
     let articles = await paginateArticles({})
     while (articles.length) {
@@ -47,19 +36,9 @@ async function articlesSync (singleRun = false) {
       articles = await paginateArticles({ skip, limit })
     }
 
-    processRecord.endDate = new Date()
-    processRecord.status = enums.processStatus.finished
-    processRecord.itemsProcessed = documentCount
-    const dateDiff = processRecord.endDate - processRecord.startDate
-    processRecord.processedHours = Math.floor((dateDiff % 86400000) / 3600000)
-
-    processRecord.save((err, doc) => {
-      if (err) {
-        logger.error(`[Error Articles sync]: ${err.message}`)
-      } else {
-        processRecord = doc
-      }
-    })
+    if (processRecord) {
+      await processRecord.end(documentCount)
+    }
 
     if (singleRun) {
       running = false
