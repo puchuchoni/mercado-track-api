@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const constants = require('../utils/constants')
 const Schema = mongoose.Schema
 
-const ProcessSchema = new Schema({
+const RecordSchema = new Schema({
   name: String,
   status: String,
   itemsProcessed: Number,
@@ -14,13 +14,13 @@ const ProcessSchema = new Schema({
   processedHours: Number
 })
 
-ProcessSchema.methods.begin = function () {
+RecordSchema.methods.start = function () {
   this.status = constants.processStatus.running
   this.start = new Date()
   return this.save()
 }
 
-ProcessSchema.methods.end = function (proccesedElements) {
+RecordSchema.methods.stop = function (proccesedElements) {
   this.endDate = new Date()
   this.status = constants.processStatus.finished
   this.itemsProcessed = proccesedElements
@@ -29,4 +29,4 @@ ProcessSchema.methods.end = function (proccesedElements) {
   return this.save()
 }
 
-module.exports = mongoose.model('ProcessRecord', ProcessSchema)
+module.exports = mongoose.model('Record', RecordSchema)

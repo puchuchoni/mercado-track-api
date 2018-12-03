@@ -1,5 +1,5 @@
 const { http, logger, createOrUpdateArticle, paginateArticles, constants } = require('../../utils')
-const { Article, ProcessRecord } = require('../../models')
+const { Article, Record } = require('../../models')
 let running = false
 
 async function processArticleChunk (articles) {
@@ -24,8 +24,8 @@ async function articlesSync (singleRun = false) {
     const limit = 1000
     let skip = 0
     const documentCount = await Article.estimatedDocumentCount().exec()
-    const processRecord = new ProcessRecord({ name: constants.processNames.priceSync })
-    await processRecord.begin()
+    const processRecord = new Record({ name: constants.processNames.priceSync })
+    await processRecord.start()
 
     let articles = await paginateArticles({})
     while (articles.length) {
@@ -37,7 +37,7 @@ async function articlesSync (singleRun = false) {
     }
 
     if (processRecord) {
-      await processRecord.end(documentCount)
+      await processRecord.stop(documentCount)
     }
 
     if (singleRun) {
