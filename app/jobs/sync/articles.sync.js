@@ -1,5 +1,5 @@
-const { http, logger, createOrUpdateArticle, paginateArticles } = require('../../utils')
-const { Article } = require('../../models')
+const { http, logger, createOrUpdateArticle, paginateArticles, constants } = require('../../utils')
+const { Article, Record } = require('../../models')
 let running = false
 
 async function processArticleChunk (articles) {
@@ -23,15 +23,21 @@ async function articlesSync (singleRun = false) {
     running = true
     const limit = 1000
     let skip = 0
-    const count = await Article.estimatedDocumentCount().exec()
+    const documentCount = await Article.estimatedDocumentCount().exec()
+    const processRecord = new Record({ name: constants.processNames.priceSync })
+    await processRecord.start()
+
     let articles = await paginateArticles({})
     while (articles.length) {
       await processArticleChunk(articles)
       skip += 1000
-      const percentage = (skip * 100 / count).toFixed(3)
-      logger.info(`[Sync]: ${skip}/${count} - ${percentage}%`)
+      const percentage = Math.floor((skip * 100 / documentCount)).toFixed(3)
+      logger.info(`[Sync]: ${skip}/${documentCount} - ${percentage}%`)
       articles = await paginateArticles({ skip, limit })
     }
+
+    await processRecord.stop(documentCount)
+
     if (singleRun) {
       running = false
     } else {
