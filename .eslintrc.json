@@ -1,6 +1,7 @@
 {
   "extends": "standard",
   "rules": {
-    "no-unused-vars": [ "error", { "args": "after-used" } ]
+    "no-unused-vars": [ "error", { "args": "after-used" } ],
+    "prefer-promise-reject-errors": 0
   }
 }

@@ -4,7 +4,7 @@ const Snapshot = require('./snapshot.model')
 
 const ArticleSchema = new Schema({
   currency_id: String,
-  id: String,
+  id: { type: String, unique: true, required: true },
   title: String,
   status: String,
   permalink: String,
@@ -15,15 +15,6 @@ const ArticleSchema = new Schema({
 ArticleSchema.methods.getLastPrice = function () {
   const lastSnapshot = this.history[this.history.length - 1]
   return lastSnapshot && lastSnapshot.price
-}
-
-ArticleSchema.methods.updatePrice = function (price) {
-  this.history.push(
-    new Snapshot({
-      price: price,
-      date: new Date()
-    })
-  )
 }
 
 module.exports = mongoose.model('Article', ArticleSchema)

@@ -1,41 +1,54 @@
-const http = require('../utils/http')
+const { http, paginateArticles, searchArticles } = require('../utils')
 const { Article, Snapshot } = require('../models')
+const helper = require('../utils/mongo.helper')
 
 exports.Follow = async (req, res) => {
   const raw = await http.getArticle(req.body.id)
-  const snapshot = new Snapshot({
-    price: raw.price,
-    date: new Date()
-  })
-  const article = new Article({
-    ...raw,
-    history: [ snapshot ]
-  })
-  article.save((err, article) => {
-    if (err) res.send(err)
-    else res.send(article)
-  })
+  const doc = await helper.createOrUpdateArticle(raw)
+  res.send(doc)
 }
 
-exports.GetAll = (req, res) => {
-  Article.find((err, articles) => {
-    if (err) res.send(err)
-    else res.json(articles)
-  })
+exports.GetAll = async (req, res) => {
+  const { skip, limit } = parseSkipAndLimit(req.query)
+  const { search } = req.query
+  /* search */
+  if (search) {
+    try {
+      const results = await searchArticles({ search, skip, limit })
+      res.send(results)
+    } catch (err) {
+      const fail = { msg: `[GET Error] Query: ${search} - ${err}` }
+      res.status(500).send(fail)
+      console.error(fail.msg)
+    }
+    return
+  }
+  /* get all */
+  try {
+    const fullResponse = {
+      skip,
+      limit,
+      total: await Article.estimatedDocumentCount(),
+      page: await paginateArticles({ skip, limit })
+    }
+    res.json(fullResponse)
+  } catch (err) {
+    res.status(400).send(err.message)
+  }
 }
 
 exports.GetById = (req, res) => {
   Article.find({ id: req.params.id }, (err, [ article ]) => {
-    if (err) res.send(err)
+    if (err) res.status(500).send(err)
     else res.json(article)
   })
 }
 
 exports.Delete = (req, res) => {
   Article.remove({
-    _id: req.params.id
+    id: req.params.id
   }, (err) => {
-    if (err) res.send(err)
+    if (err) res.status(500).send(err)
     else res.json({ message: 'Successfully deleted' })
   })
 }
@@ -43,14 +56,22 @@ exports.Delete = (req, res) => {
 exports.AddSnapshot = (req, res) => {
   Article.findById(req.params.id, (err, article) => {
     if (err) {
-      res.send(err)
+      res.status(500).send(err)
       return
     }
     const snapshot = new Snapshot(req.body)
     article.history.push(snapshot)
     article.save((err) => {
-      if (err) res.send(err)
-      else res.json(article)
+      if (err) res.status(500).send(err)
+      else res.status(201).json(article)
     })
   })
+}
+
+function parseSkipAndLimit ({ skip, limit }) {
+  const reg = /\D/g
+  return {
+    skip: reg.test(skip) ? 0 : +skip,
+    limit: reg.test(limit) ? 50 : +limit
+  }
 }
