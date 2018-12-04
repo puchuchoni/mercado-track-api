@@ -36,9 +36,7 @@ async function articlesSync (singleRun = false) {
       articles = await paginateArticles({ skip, limit })
     }
 
-    if (processRecord) {
-      await processRecord.stop(documentCount)
-    }
+    await processRecord.stop(documentCount)
 
     if (singleRun) {
       running = false
