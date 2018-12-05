@@ -6,10 +6,14 @@ module.exports = { createOrUpdateArticle, addCategory, paginateArticles, searchA
 function createOrUpdateArticle (item) {
   return new Promise(async (resolve, reject) => {
     const snapshot = new Snapshot({ price: item.price })
+    const images = item.pictures.map(function(picture) {
+      return picture['url']
+    })
     const article = {
       ...item,
       $addToSet: {
-        history: snapshot
+        history: snapshot,
+        images: images
       }
     }
     try {
@@ -22,7 +26,7 @@ function createOrUpdateArticle (item) {
           })
         } else resolve(localArticle)
       } else {
-        const _article = Object.assign({ history: [snapshot] }, item)
+        const _article = Object.assign({ history: [snapshot], images: images }, item)
         const article = new Article(_article)
         article.save((err, doc) => {
           if (err) reject(err)
