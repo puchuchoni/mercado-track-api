@@ -9,7 +9,7 @@ const ArticleSchema = new Schema({
   status: String,
   permalink: String,
   thumbnail: String,
-  images: [String],
+  images: { type: [String], default: [] },
   history: [Snapshot.schema]
 })
 
