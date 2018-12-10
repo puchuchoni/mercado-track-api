@@ -6,7 +6,7 @@ module.exports = { createOrUpdateArticle, addCategory, paginateArticles, searchA
 function createOrUpdateArticle (item) {
   return new Promise(async (resolve, reject) => {
     const snapshot = new Snapshot({ price: item.price })
-    const images = item.pictures.map(picture => picture.url)
+    const images = item.pictures && item.pictures.map(picture => picture.url)
     const article = {
       ...item,
       $addToSet: {

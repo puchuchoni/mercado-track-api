@@ -9,8 +9,8 @@ const ArticleSchema = new Schema({
   status: String,
   permalink: String,
   thumbnail: String,
-  images: [String],
   original_price: Number,
+  images: { type: [String], default: [] },
   history: [Snapshot.schema]
 })
 
