@@ -17,7 +17,7 @@ function createOrUpdateArticle (item) {
     try {
       const [ localArticle ] = await Article.find({ id: item.id })
       if (localArticle) {
-        if (localArticle.getLastPrice() !== item.price) {
+        if (localArticle.shouldUpdate(item.price, images)) {
           localArticle.updateOne(article, (err, doc) => {
             if (err) reject(err)
             else resolve(doc)

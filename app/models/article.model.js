@@ -10,12 +10,17 @@ const ArticleSchema = new Schema({
   permalink: String,
   thumbnail: String,
   images: [String],
+  original_price: Number,
   history: [Snapshot.schema]
 })
 
 ArticleSchema.methods.getLastPrice = function () {
   const lastSnapshot = this.history[this.history.length - 1]
   return lastSnapshot && lastSnapshot.price
+}
+
+ArticleSchema.methods.shouldUpdate = function (price, images) {
+  return this.getLastPrice() !== price || this.images.toObject() !== images
 }
 
 module.exports = mongoose.model('Article', ArticleSchema)
