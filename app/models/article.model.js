@@ -20,7 +20,7 @@ ArticleSchema.methods.getLastPrice = function () {
 }
 
 ArticleSchema.methods.shouldUpdate = function (price, images) {
-  return this.getLastPrice() !== price || this.images.toObject() !== images
+  return this.getLastPrice() !== price || images.some(i => this.images.toObject().indexOf(i) = -1)
 }
 
 module.exports = mongoose.model('Article', ArticleSchema)
