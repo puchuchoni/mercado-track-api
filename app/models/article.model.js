@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const Snapshot = require('./snapshot.model')
-const constants = require('../utils/constants')
+const { constants } = require('../utils')
 
 const ArticleSchema = new Schema({
   currency_id: String,
