@@ -2,6 +2,7 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const SnapshotSchema = new Schema({
+  original_price: Number,
   price: Number,
   date: {
     type: Date,

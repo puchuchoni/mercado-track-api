@@ -3,6 +3,11 @@ const processStatus = {
   finished: 'Finished'
 }
 
+const articleStatus = {
+  active: 'active',
+  paused: 'paused'
+}
+
 const processNames = {
   priceSync: 'Price Synchronization',
   articlesCollector: 'Article Collector',
@@ -11,5 +16,6 @@ const processNames = {
 
 module.exports = {
   processStatus,
+  articleStatus,
   processNames
 }

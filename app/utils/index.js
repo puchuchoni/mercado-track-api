@@ -9,5 +9,5 @@ module.exports = {
   logger,
   ...helpers,
   ...mongoHelper,
-  constants
+  ...constants
 }
