@@ -26,8 +26,8 @@ ArticleSchema.methods.getLastSnapshot = function () {
 
 ArticleSchema.methods.shouldUpdate = function (item, images) {
   const lastSnapshot = this.getLastSnapshot()
-  const pricesOutdated = lastSnapshot !== null && (lastSnapshot.price !== item.price || lastSnapshot.original_price !== item.original_price)
-  const photosOutdated = images.some(i => this.images.toObject().indexOf(i) === -1)
+  const pricesOutdated = !!lastSnapshot && (lastSnapshot.price !== item.price || lastSnapshot.original_price !== item.original_price)
+  const photosOutdated = !!images && images.some(image => !this.images.includes(image))
 
   return pricesOutdated || photosOutdated
 }

@@ -1,5 +1,5 @@
 const { Snapshot, Article, Category } = require('../models')
-const { logger } = require('./logger')
+const { logger } = require('../utils')
 
 module.exports = { createOrUpdateArticle, addCategory, paginateArticles, searchArticles }
 
