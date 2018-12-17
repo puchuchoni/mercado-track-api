@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const Snapshot = require('./snapshot.model')
+const { constants } = require('../utils')
 
 const ArticleSchema = new Schema({
   currency_id: String,
@@ -16,6 +17,23 @@ const ArticleSchema = new Schema({
 ArticleSchema.methods.getLastPrice = function () {
   const lastSnapshot = this.history[this.history.length - 1]
   return lastSnapshot && lastSnapshot.price
+}
+
+ArticleSchema.methods.getLastSnapshot = function () {
+  const lastSnapshot = this.history[this.history.length - 1]
+  return lastSnapshot
+}
+
+ArticleSchema.methods.shouldUpdate = function (item, images) {
+  const lastSnapshot = this.getLastSnapshot()
+  const pricesOutdated = !!lastSnapshot && (lastSnapshot.price !== item.price || lastSnapshot.original_price !== item.original_price)
+  const photosOutdated = !!images && images.some(image => !this.images.includes(image))
+
+  return pricesOutdated || photosOutdated
+}
+
+ArticleSchema.methods.shouldCreate = function () {
+  return this.status === constants.articleStatus.active
 }
 
 module.exports = mongoose.model('Article', ArticleSchema)

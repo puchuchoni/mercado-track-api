@@ -1,11 +1,11 @@
 const { Snapshot, Article, Category } = require('../models')
-const { logger } = require('./logger')
+const { logger } = require('../utils')
 
 module.exports = { createOrUpdateArticle, addCategory, paginateArticles, searchArticles }
 
 function createOrUpdateArticle (item) {
   return new Promise(async (resolve, reject) => {
-    const snapshot = new Snapshot({ price: item.price })
+    const snapshot = new Snapshot({ price: item.price, original_price: item.original_price })
     const images = item.pictures && item.pictures.map(picture => picture.url)
     const article = {
       ...item,
@@ -17,7 +17,7 @@ function createOrUpdateArticle (item) {
     try {
       const [ localArticle ] = await Article.find({ id: item.id })
       if (localArticle) {
-        if (localArticle.getLastPrice() !== item.price) {
+        if (localArticle.shouldUpdate(item, images)) {
           localArticle.updateOne(article, (err, doc) => {
             if (err) reject(err)
             else resolve(doc)
@@ -26,10 +26,12 @@ function createOrUpdateArticle (item) {
       } else {
         const _article = Object.assign({ history: [snapshot], images }, item)
         const article = new Article(_article)
-        article.save((err, doc) => {
-          if (err) reject(err)
-          else resolve(doc)
-        })
+        if (article.shouldCreate()) {
+          article.save((err, doc) => {
+            if (err) reject(err)
+            else resolve(doc)
+          })
+        } else resolve('article not active')
       }
     } catch (err) {
       logger.error(`${item.id}: ${err.message}`)
