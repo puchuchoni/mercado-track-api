@@ -7,7 +7,7 @@ const constants = require('./constants')
 module.exports = {
   http,
   logger,
+  constants,
   ...helpers,
-  ...mongoHelper,
-  constants
+  ...mongoHelper
 }
