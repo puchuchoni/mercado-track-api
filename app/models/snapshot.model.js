@@ -12,7 +12,7 @@ const SnapshotSchema = new Schema({
 }, { _id: false })
 
 SnapshotSchema.pre('save', function (next) {
-  this.discount = ((this.original_price - this.price) * 100) / this.original_price
+  this.discount = Math.floor(((this.original_price - this.price) * 100) / this.original_price)
   next()
 })
 
