@@ -27,13 +27,14 @@ async function articlesSync (singleRun = false) {
     const processRecord = new Record({ name: constants.processNames.priceSync })
     await processRecord.start()
 
-    let articles = await paginateArticles({})
+    let { articles } = await paginateArticles({ limit })
     while (articles.length) {
       await processArticleChunk(articles)
       skip += 1000
       const percentage = Math.floor((skip * 100 / documentCount)).toFixed(3)
       logger.info(`[Sync]: ${skip}/${documentCount} - ${percentage}%`)
-      articles = await paginateArticles({ skip, limit })
+      const pagination = await paginateArticles({ skip, limit })
+      articles = pagination.articles
     }
 
     await processRecord.stop(documentCount)
