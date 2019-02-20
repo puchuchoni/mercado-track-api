@@ -1,18 +1,6 @@
 version: 2
 
-workflows:
-  version: 2
-  build-and-deploy:
-    jobs:
-      - build
-      - deploy-prod:
-          filters:
-            branches:
-              only:
-                - master
-          requires:
-            - build
-
+# jobs
 jobs:
   build:
     docker:
@@ -29,9 +17,23 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package-lock.json" }}
       - run: npm test
-    deploy-prod:
-      docker:
-        - image: circleci/node:10.13.0
-      steps:
-        - checkout
-        - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP "./deploy_project.sh"
+  deploy-prod:
+    docker:
+      - image: circleci/node:10.13.0
+    steps:
+      - checkout
+      - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP "./deploy_project.sh"
+
+# workflows
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy-prod:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build
