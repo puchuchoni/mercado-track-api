@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "build": "tsc",
-    "prod": "tsc && node ./build/index.js",
+    "prod": "tsc && node ./build/src/index.js",
     "test": "echo \"No tests specified\" && exit 0"
   },
   "repository": {
