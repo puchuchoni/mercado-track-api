@@ -1,0 +1,29 @@
+version: 2
+
+general:
+  branches:
+    only:
+      # - master
+      - dev
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10.13.0
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+      - run: npm install
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+      - run: npm test
+    # deploy-prod:
+    #   steps:
+    #     - checkout
+    #     - run: ssh -oStrictHostKeyChecking=no -v $DROPLET_USER@$DROPLET_IP "./deploy.sh"

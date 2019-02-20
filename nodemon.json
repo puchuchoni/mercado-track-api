@@ -1,5 +1,10 @@
 {
-    "verbose": true,
-    "ignore": ["/node_modules"],
-    "watch": ["/app/**", "/utils"]
+  "port": "8082",
+  "watch": [ "src" ],
+  "verbose": true,
+  "ext": "js,ts",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "exec": "clear && tslint -p tsconfig.json && ts-node -T ./src/index.ts"
 }
