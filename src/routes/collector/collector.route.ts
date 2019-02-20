@@ -8,12 +8,12 @@ collectorRouter.route('/')
   .get(getProgress)
   .post(fetchAllArticles);
 
-function getProgress(req: Request, res: Response) {
+function getProgress(_req: Request, res: Response) {
   if (running) res.send({ progress: Collector.progress });
   else res.send({ message: 'Collector is not running' });
 }
 
-async function fetchAllArticles(req: Request, res: Response) {
+async function fetchAllArticles(_req: Request, res: Response) {
   if (running) {
     return res.status(403).send({ message: 'Collector already running', progress: Collector.progress });
   }
