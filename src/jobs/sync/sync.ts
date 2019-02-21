@@ -3,7 +3,7 @@ import { Article } from '../../models';
 import { Progress } from './progress';
 import { IMLArticle } from '../../interfaces';
 
-const limit = 50;
+const limit = 200;
 let progress: Progress;
 
 export class Sync {
