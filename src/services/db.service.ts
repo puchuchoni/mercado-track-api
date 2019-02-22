@@ -12,7 +12,7 @@ export class DBService {
 
   public static async updateArticles(articles: IMLArticle[]): Promise<BulkWriteOpResultObject> {
     const bulkUpdateOps = articles.map(DBService.articleUpdateOp);
-    return Article.collection.bulkWrite(bulkUpdateOps);
+    return Article.collection.bulkWrite(bulkUpdateOps, { ordered : false });
   }
 
   public static async followArticle(id: string) {
