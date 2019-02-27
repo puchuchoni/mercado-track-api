@@ -7,7 +7,7 @@
     "start": "nodemon",
     "build": "tsc",
     "prod": "tsc && node ./build/src/index.js",
-    "test": "echo \"No tests specified\" && exit 0"
+    "test": "ts-mocha ./test/**/*.spec.ts"
   },
   "repository": {
     "type": "git",
@@ -39,7 +39,14 @@
     "winston-loggly-bulk": "^2.0.3"
   },
   "devDependencies": {
+    "@types/expect": "^1.20.4",
+    "@types/mocha": "^5.2.6",
+    "chai": "^4.2.0",
+    "eslint": "^5.3.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "mocha": "^6.0.2",
     "nodemon": "^1.18.9",
+    "ts-mocha": "^6.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.1",
     "tslint-config-airbnb": "^5.11.1",
