@@ -9,7 +9,7 @@ const SnapshotSchema: Schema<ISnapshot> = new Schema(
     discount: Number,
     date: {
       type: String,
-      default: format(new Date(), 'DD/MM/YYYY'),
+      default: () => format(new Date(), 'DD/MM/YYYY'),
     },
   },
   {

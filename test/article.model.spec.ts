@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { Article } from '../src/models';
-import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD } from './articles.mock.json';
+import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD } from './articles.mock';
 
 describe('Articles', () => {
   before(async () => {

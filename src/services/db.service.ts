@@ -62,7 +62,7 @@ export class DBService {
     },
   })
 
-  private static calcDiscount = ({ original_price, price }) => {
+  private static calcDiscount = ({ original_price, price }: IMLArticle) => {
     return original_price
       ? Math.floor(((original_price - price) * 100) / original_price)
       : 0;

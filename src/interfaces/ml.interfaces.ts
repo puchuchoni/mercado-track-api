@@ -1,7 +1,7 @@
 export interface IMLArticle {
   id: string;
   price: number;
-  original_price: number;
+  original_price: number|null;
   thumbnail: string;
   pictures: [{
     secure_url: string,
