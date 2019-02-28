@@ -1,9 +1,13 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import http from 'http';
 import https from 'https';
-import hidden from '../../hidden';
 import { Markets, ArticleConditions } from '../constants';
 import { IMLSearchResult, IMLArticle } from '../interfaces';
+
+// tslint:disable
+const client_id = process.env.ML_CLIENT_ID || require('../hidden').mlClientId;
+const client_secret = process.env.ML_CLIENT_SECRET || require('../hidden').mlClientSecret;
+// tslint:enable
 
 let accessToken = '';
 const instance: AxiosInstance = axios.create({
@@ -68,9 +72,9 @@ export class MLService {
 
   private static getToken () {
     return instance.post('/oauth/token', {
+      client_id,
+      client_secret,
       grant_type: 'client_credentials',
-      client_id: hidden.mlClientId,
-      client_secret: hidden.mlClientSecret,
     }).then((res: AxiosResponse) => res.data.access_token);
   }
 
