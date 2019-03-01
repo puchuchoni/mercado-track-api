@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import hidden from '../hidden';
+import hidden from './hidden';
 import * as routes from './routes';
 import { Sync } from './jobs/sync';
 import logger from './shared/logger';

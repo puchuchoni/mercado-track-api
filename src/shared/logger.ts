@@ -1,6 +1,6 @@
 import winston from 'winston';
 import { Loggly } from 'winston-loggly-bulk';
-import hidden from '../../hidden';
+import hidden from '../hidden';
 
 const transportsObject = new Loggly({
   inputToken: hidden.logglyToken,
