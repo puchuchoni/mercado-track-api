@@ -1,4 +1,5 @@
 node_modules/
 build/
-hidden.js
 .vscode
+.env
+.env.*

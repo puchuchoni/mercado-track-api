@@ -3,11 +3,10 @@ import http from 'http';
 import https from 'https';
 import { Markets, ArticleConditions } from '../constants';
 import { IMLSearchResult, IMLArticle } from '../interfaces';
-
-// tslint:disable
-const client_id = process.env.ML_CLIENT_ID || require('../hidden').mlClientId;
-const client_secret = process.env.ML_CLIENT_SECRET || require('../hidden').mlClientSecret;
-// tslint:enable
+import {
+  ML_CLIENT_ID as client_id,
+  ML_CLIENT_SECRET as client_secret,
+} from '../shared/config';
 
 let accessToken = '';
 const instance: AxiosInstance = axios.create({

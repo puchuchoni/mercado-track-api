@@ -1,9 +1,11 @@
 import mongoose from 'mongoose';
+import { TEST_DB_URL } from '../src/shared/config';
 
-// tslint:disable-next-line
-const url = process.env.CI ? process.env.MONGO_TEST_URL : require('../src/hidden').testUrl;
+if (!TEST_DB_URL) {
+  throw new ReferenceError('TEST_DB_URL Needs to be defined');
+}
 
-mongoose.connect(url, { useNewUrlParser: true });
+mongoose.connect(TEST_DB_URL, { useNewUrlParser: true });
 
 before(() => mongoose.connection.dropCollection('articles'));
 

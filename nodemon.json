@@ -1,8 +1,7 @@
 {
-  "port": "8082",
   "watch": [ "src" ],
   "verbose": true,
-  "ext": "js,ts",
+  "ext": "ts",
   "env": {
     "NODE_ENV": "development"
   },
