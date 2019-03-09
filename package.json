@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "build": "tsc",
-    "prod": "env NODE_ENV=production tsc && node ./build/src/index.js",
+    "prod": "tsc && env NODE_ENV=production node ./build/src/index.js",
     "test": "env NODE_ENV=test ts-mocha ./test/**/*.spec.ts"
   },
   "repository": {
