@@ -17,4 +17,4 @@ const SnapshotSchema: Schema<ISnapshot> = new Schema(
   },
 );
 
-export const Snapshot = model('Snapshot', SnapshotSchema);
+export const Snapshot = model<ISnapshot>('Snapshot', SnapshotSchema);

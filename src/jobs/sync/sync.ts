@@ -17,7 +17,7 @@ export class Sync {
       while (articles.length) {
         try {
           const mlArticles = await Sync.getMlArticles(articles);
-          await DBService.updateArticles(mlArticles);
+          await DBService.updateArticles(articles, mlArticles);
           progress.step(articles.length);
           skip += limit;
           const pagination = await DBService.paginateArticles({ skip, limit });
@@ -39,17 +39,15 @@ export class Sync {
   }
 
   private static async getMlArticles(articles): Promise<IMLArticle[]> {
-    const mlArticles = await Promise.all<IMLArticle>(
-      /* returning null on catch for the promise not to throw, we'll filter later */
+    return Promise.all<IMLArticle>(
       articles.map(
         (article: IMLArticle): Promise<IMLArticle|null> => MLService.getArticle(article.id)
           .catch((error) => {
             progress.logError(error);
-            return null;
+            return null; // returning null on catch for the promise not to throw
           }),
       ),
     );
-    return mlArticles.filter(article => !!article);
   }
 
 }

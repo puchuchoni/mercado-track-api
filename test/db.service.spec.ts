@@ -6,9 +6,9 @@ import { Article } from '../src/models';
 import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD } from './articles.mock';
 import { DBService } from '../src/services/db.service';
 
-const leanPrice = { price: 123 };
+const leanPrice = 123;
 const baseArticles = [MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD];
-const updatedArticles = baseArticles.map(article => Object.assign({}, article, leanPrice));
+const updatedArticles = baseArticles.map(article => Object.assign({}, article, { price: leanPrice }));
 
 describe('DBService', () => {
   before(() => mongoose.connection.dropCollection('articles'));
@@ -21,37 +21,38 @@ describe('DBService', () => {
   });
 
   it('should update lean and newly created articles', async () => {
-    await DBService.updateArticles(baseArticles);
-    const articles = await Article.find();
+    let articles = await Article.find();
+    await DBService.updateArticles(articles, baseArticles);
+    articles = await Article.find();
     for (const article of articles) {
-      const imgUrl = `https://some-img/${article.id}`;
-      expect(article.images).to.be.an('array').that.includes(imgUrl);
       expect(article.history).to.have.lengthOf(1);
     }
   });
 
   it('should update articles with a different price', async () => {
-    await DBService.updateArticles(updatedArticles);
-    const articles = await Article.find();
+    let articles = await Article.find();
+    await DBService.updateArticles(articles, updatedArticles);
+    articles = await Article.find();
     for (const article of articles) {
       expect(article.history).to.have.lengthOf(2);
       expect(article.history.pop()).to.include({
-        ...leanPrice,
+        price: leanPrice,
         date: format(new Date(), 'DD/MM/YYYY'),
       });
     }
   });
 
-  it('should update articles when the date changes', async () => {
+  it('should not update articles when only the date changes', async () => {
     mockdate.set(addDays(new Date(), 1)); // mocking today as tomorrow
-    await DBService.updateArticles(updatedArticles);
+    let articles = await Article.find();
+    await DBService.updateArticles(articles, updatedArticles);
+    articles = await Article.find();
     mockdate.reset();
-    const articles = await Article.find();
     for (const article of articles) {
-      expect(article.history).to.have.lengthOf(3);
+      expect(article.history).to.have.lengthOf(2);
       expect(article.history.pop()).to.include({
-        ...leanPrice,
-        date: format(addDays(new Date(), 1), 'DD/MM/YYYY'),
+        price: leanPrice,
+        date: format(new Date(), 'DD/MM/YYYY'),
       });
     }
   });

@@ -1,5 +1,4 @@
 import { Error } from 'mongoose';
-import { BulkWriteOpResultObject } from 'mongodb';
 import { Snapshot, Article } from '../models';
 import { IArticle } from '../models/article/article.interface';
 import { IMLArticle } from '../interfaces';
@@ -10,9 +9,21 @@ export class DBService {
     return Article.insertMany(items, { ordered: false });
   }
 
-  public static async updateArticles(articles: IMLArticle[]): Promise<BulkWriteOpResultObject> {
-    const bulkUpdateOps = articles.map(DBService.articleUpdateOp);
-    return Article.collection.bulkWrite(bulkUpdateOps, { ordered : false });
+  public static async updateArticles(articles: IArticle[], mlArticles: IMLArticle[]): Promise<IArticle[]> {
+    const promises: Promise<IArticle>[] = [];
+    articles.forEach(async (article, i) => {
+      const mlArticle = mlArticles[i];
+      if (!mlArticle) return; // skipping because request failed for this article
+      const lastSnapshot = article.history[article.history.length - 1];
+      article.images = mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url);
+      if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
+        article.history.push(new Snapshot(mlArticle));
+      }
+      if (article.isModified()) {
+        promises.push(article.save());
+      }
+    });
+    return Promise.all(promises);
   }
 
   public static async followArticle(id: string) {
@@ -29,10 +40,9 @@ export class DBService {
     if (limit > 1000) {
       return Promise.reject(new Error('Using a limit higher than 1k is not allowed.'));
     }
-    const fields = '-_id -__v';
     const query = search ? { $text: { $search: search } } : {};
     try {
-      const articles = await Article.find(query, fields, { skip, limit }).exec();
+      const articles = await Article.find(query, null, { skip, limit }).exec();
       const total = search
         ? await Article.find(query).count().exec()
         : await Article.estimatedDocumentCount();
@@ -40,32 +50,6 @@ export class DBService {
     } catch (err) {
       return Promise.reject(err.message);
     }
-  }
-
-  private static articleUpdateOp = (mlArticle: IMLArticle) => ({
-    updateOne: {
-      filter: { id: mlArticle.id },
-      update: {
-        $set: {
-          images: mlArticle.pictures ? mlArticle.pictures.map(pic => pic.secure_url) : [],
-          status: mlArticle.status,
-          thumbnail: mlArticle.thumbnail,
-          discount: DBService.calcDiscount(mlArticle),
-        },
-        $addToSet: {
-          history: new Snapshot({
-            price: mlArticle.price,
-            original_price: mlArticle.original_price,
-          }),
-        },
-      },
-    },
-  })
-
-  private static calcDiscount = ({ original_price, price }: IMLArticle) => {
-    return original_price
-      ? Math.floor(((original_price - price) * 100) / original_price)
-      : 0;
   }
 
 }
