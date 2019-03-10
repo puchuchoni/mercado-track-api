@@ -15,7 +15,6 @@ export class Progress {
 
   public step(length: number = 1) {
     this.processed += length;
-    logger.info(this.data.progress);
   }
 
   public logError(error) {

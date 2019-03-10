@@ -16,6 +16,7 @@ export class DBService {
       if (!mlArticle) return; // skipping because request failed for this article
       const lastSnapshot = article.history[article.history.length - 1];
       article.images = mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url);
+      article.status = mlArticle.status;
       if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
         article.history.push(new Snapshot(mlArticle));
       }

@@ -42,6 +42,16 @@ describe('DBService', () => {
     }
   });
 
+  it('should update article with a different status', async () => {
+    const pausedStatusObj = { status: 'paused' };
+    let articles = await Article.find();
+    const articleWithDifferentStatus = Object.assign({}, updatedArticles[0], pausedStatusObj);
+    await DBService.updateArticles(articles, [articleWithDifferentStatus]);
+    articles = await Article.find();
+    const updatedArticle = articles.find(article => article.id === articleWithDifferentStatus.id);
+    expect(updatedArticle).to.exist.and.to.include(pausedStatusObj);
+  });
+
   it('should not update articles when only the date changes', async () => {
     mockdate.set(addDays(new Date(), 1)); // mocking today as tomorrow
     let articles = await Article.find();
