@@ -26,6 +26,7 @@ describe('DBService', () => {
     articles = await Article.find();
     for (const article of articles) {
       expect(article.history).to.have.lengthOf(1);
+      expect(article.price).to.exist;
     }
   });
 
@@ -39,6 +40,7 @@ describe('DBService', () => {
         price: leanPrice,
         date: format(new Date(), 'DD/MM/YYYY'),
       });
+      expect(article.price).to.be.eq(leanPrice);
     }
   });
 

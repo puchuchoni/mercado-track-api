@@ -19,6 +19,7 @@ export class DBService {
       article.status = mlArticle.status;
       if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
         article.history.push(new Snapshot(mlArticle));
+        article.price = mlArticle.price;
       }
       if (article.isModified()) {
         promises.push(article.save());
