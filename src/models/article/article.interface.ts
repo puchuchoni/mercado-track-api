@@ -6,6 +6,7 @@ export interface IArticle extends Document {
   id: string;
   title: string;
   status: string;
+  price: number;
   permalink: string;
   thumbnail: string;
   images: string[];

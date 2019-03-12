@@ -10,6 +10,7 @@ const ArticleSchema: Schema<IArticle> = new Schema({
   permalink: String,
   thumbnail: String,
   images: [String],
+  price: Number,
   history: [Snapshot.schema],
 });
 
