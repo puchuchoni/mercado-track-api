@@ -18,9 +18,11 @@ export class Collector {
         const subCategories = category.children_categories;
         progress.setChildrenCategorySize(subCategories.length);
         for (const subCategory of subCategories) {
+          await DBService.addCategory(subCategory, category);
           await Collector.processCategory(subCategory.id);
           progress.childrenCategoryStep();
         }
+        await DBService.addCategory(category);
         await Collector.processCategory(categoryId);
         progress.mainCategoryStep();
       } catch (error) {
@@ -53,7 +55,7 @@ export class Collector {
     try {
       const offset = pageNumber * limit;
       page = await MLService.searchByCategory({ categoryId, offset, limit });
-      await DBService.createArticles(page.results);
+      await DBService.createArticles(page.results, categoryId);
       progress.pageStep(page.results.length);
     } catch (error) {
       // todo: add # of new articles vs already existing articles

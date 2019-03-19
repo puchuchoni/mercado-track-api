@@ -19,3 +19,10 @@ export interface IMLSearchResult {
   };
   results: IMLArticle[];
 }
+
+export interface IMLCategory {
+  id: string;
+  name: string;
+  total_items_in_this_category: number;
+  children_categories: IMLCategory[];
+}

@@ -6,6 +6,7 @@ export const MLATEST_FIRST: IMLArticle = {
   pictures: [{
     secure_url: 'https://some-img/MLATEST_FIRST',
   }],
+  currency_id: 'ARS',
   price: 999,
   thumbnail: 'www.thumbnail.com/MLATEST_FIRST',
   status: 'active',
@@ -17,6 +18,7 @@ export const MLATEST_SECOND: IMLArticle = {
   pictures: [{
     secure_url: 'https://some-img/MLATEST_SECOND',
   }],
+  currency_id: 'ARS',
   price: 999,
   thumbnail: 'www.thumbnail.com/MLATEST_SECOND',
   status: 'active',
@@ -28,6 +30,7 @@ export const MLATEST_THIRD: IMLArticle = {
   pictures: [{
     secure_url: 'https://some-img/MLATEST_THIRD',
   }],
+  currency_id: 'ARS',
   price: 999,
   thumbnail: 'www.thumbnail.com/MLATEST_THIRD',
   status: 'active',

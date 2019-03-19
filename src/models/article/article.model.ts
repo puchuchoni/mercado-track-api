@@ -11,6 +11,7 @@ const ArticleSchema: Schema<IArticle> = new Schema({
   thumbnail: String,
   images: [String],
   price: Number,
+  category_id: String,
   history: [Snapshot.schema],
 });
 

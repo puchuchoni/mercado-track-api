@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 import http from 'http';
 import https from 'https';
 import { Markets, ArticleConditions } from '../constants';
-import { IMLSearchResult, IMLArticle } from '../interfaces';
+import { IMLSearchResult, IMLArticle, IMLCategory } from '../interfaces';
 import {
   ML_CLIENT_ID as client_id,
   ML_CLIENT_SECRET as client_secret,
@@ -18,16 +18,13 @@ const instance: AxiosInstance = axios.create({
 });
 
 export class MLService {
-  public static async searchByArticleId (id: string) {
-    return instance.get(`/items/${id}`).then((res: AxiosResponse) => res.data);
-  }
 
   public static getArticle (id: string) {
     return instance.get(`/items/${id}`).then((res: AxiosResponse<IMLArticle>) => res.data);
   }
 
   public static getCategory (id: string) {
-    return instance.get(`/categories/${id}`).then((res: AxiosResponse) => res.data);
+    return instance.get(`/categories/${id}`).then((res: AxiosResponse<IMLCategory>) => res.data);
   }
 
   public static async searchByCategory ({

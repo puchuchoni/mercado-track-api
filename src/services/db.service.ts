@@ -1,11 +1,16 @@
+import { ICategoryLean } from './../models/category/category.interface';
 import { Error } from 'mongoose';
-import { Snapshot, Article } from '../models';
+import { Snapshot, Article, Category } from '../models';
 import { IArticle } from '../models/article/article.interface';
-import { IMLArticle } from '../interfaces';
+import { IMLArticle, IMLCategory } from '../interfaces';
 import { MLService } from './ml.service';
+import { logger } from '../shared';
 
 export class DBService {
-  public static createArticles(items: IMLArticle[]): Promise<IArticle[]> {
+  public static createArticles(mlArticles: IMLArticle[], categoryId: string)
+  : Promise<IArticle[]> {
+    const categoryReference = { category_id: categoryId };
+    const items = mlArticles.map(article => Object.assign({}, article, categoryReference));
     return Article.insertMany(items, { ordered: false });
   }
 
@@ -54,4 +59,21 @@ export class DBService {
     }
   }
 
+  public static async addCategory(category: IMLCategory, parentCategory?: IMLCategory) {
+    const categoryObj: ICategoryLean = {
+      _id: category.id,
+      name: category.name,
+    };
+    try {
+      const dbCategory = await Category.findById(category.id);
+      if (!!dbCategory) return;
+      if (parentCategory) {
+        await Category.create({ ...categoryObj, parent: parentCategory.id });
+      } else {
+        await Category.create(categoryObj);
+      }
+    } catch (err) {
+      logger.log(`Couldn't save category ${category.id}`, err.errmsg);
+    }
+  }
 }

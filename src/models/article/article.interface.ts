@@ -10,5 +10,6 @@ export interface IArticle extends Document {
   permalink: string;
   thumbnail: string;
   images: string[];
+  category_id: string;
   history: ISnapshot[];
 }

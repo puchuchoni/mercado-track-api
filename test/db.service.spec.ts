@@ -14,7 +14,7 @@ describe('DBService', () => {
   before(() => mongoose.connection.dropCollection('articles'));
 
   it('should insertMany articles', async () => {
-    await DBService.createArticles(baseArticles);
+    await DBService.createArticles(baseArticles, 'category_id');
     const articles = await Article.find();
     expect(articles.length).to.equal(3);
     expect(articles[0].images).to.be.empty;
