@@ -1,6 +1,8 @@
 import { logger } from '../../shared';
 
 export class Progress {
+  public stopped: boolean;
+  public running: boolean;
   private processed: number = 0;
   private total: number;
   private startDate: Date;
@@ -11,6 +13,8 @@ export class Progress {
     this.total = totalArticles;
     this.startDate = new Date();
     this.errors = [];
+    this.stopped = false;
+    this.running = true;
   }
 
   public step(length: number = 1) {
@@ -30,9 +34,11 @@ export class Progress {
   public finish() {
     logger.info('Sync finished');
     logger.info(this.data);
+    this.running = false;
   }
 
   public get data () {
+    if (!this.running) return { msg: 'Not running' };
     const timeRunning = this.formatTimeRunning;
     const percentage = Math.floor(this.processed * 100 / this.total);
     const etc = this.minutesETC;
@@ -44,6 +50,19 @@ export class Progress {
       errorsCount: this.errors.length,
       errors: this.errors,
     };
+  }
+
+  public stop () {
+    this.stopped = true;
+    return new Promise((resolve) => {
+      const interval = setInterval(() => {
+        if (!this.running) {
+          this.stopped = false;
+          clearInterval(interval);
+          resolve();
+        }
+      }, 50);
+    });
   }
 
   private get minutesETC() {

@@ -1,6 +1,7 @@
 import { DBService, MLService } from '../../services';
 import { MainCategories } from '../../constants';
 import { Progress } from './progress';
+import { Sync } from './../sync';
 
 const limit = 50;
 const maxOffset = 10000;
@@ -10,6 +11,7 @@ let progress: Progress;
 export class Collector {
 
   public static async run() {
+    await Sync.stop();
     const categories = Object.values(MainCategories);
     progress = new Progress(categories.length);
     for (const categoryId of categories) {
@@ -30,6 +32,7 @@ export class Collector {
       }
     }
     progress.finish();
+    Sync.run();
   }
 
   public static get progress() {

@@ -15,6 +15,10 @@ export class Sync {
     try {
       let { articles } = await DBService.paginateArticles({ limit });
       while (articles.length) {
+        if (progress.stopped) {
+          progress.finish();
+          return; // progress has been stopped so we return from the infinite loop
+        }
         try {
           const mlArticles = await Sync.getMlArticles(articles);
           await DBService.updateArticles(articles, mlArticles);
@@ -33,6 +37,8 @@ export class Sync {
     progress.finish();
     Sync.run();
   }
+
+  public static stop = () => progress && progress.stop();
 
   public static get progress() {
     return progress && progress.data;
