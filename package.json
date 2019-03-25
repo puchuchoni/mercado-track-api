@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "build": "tsc",
-    "prod": "tsc && env NODE_ENV=production node ./build/src/index.js",
+    "prod": "rimraf build && tsc && env NODE_ENV=production node ./build/index.js",
     "test": "env NODE_ENV=test ts-mocha ./test/**/*.spec.ts"
   },
   "repository": {
@@ -51,6 +51,7 @@
     "mocha": "^6.0.2",
     "mockdate": "^2.0.2",
     "nodemon": "^1.18.9",
+    "rimraf": "^2.6.3",
     "ts-mocha": "^6.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.1",

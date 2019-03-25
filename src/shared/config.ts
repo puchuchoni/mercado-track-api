@@ -5,7 +5,7 @@ if (!process.env.CI) {
   let path: string;
   switch (process.env.NODE_ENV) {
     case 'production':
-      path = `${__dirname}/../../../.env.prod`;
+      path = `${__dirname}/../../.env.prod`;
       break;
     default:
       path = `${__dirname}/../../.env.dev`;
