@@ -1,5 +1,6 @@
 export interface IMLArticle {
   id: string;
+  title: string;
   price: number;
   original_price: number|null;
   currency_id: string;

@@ -22,6 +22,7 @@ export class DBService {
       const lastSnapshot = article.history[article.history.length - 1];
       article.images = mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url);
       article.status = mlArticle.status;
+      article.title = mlArticle.title;
       if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
         article.history.push(new Snapshot(mlArticle));
         article.price = mlArticle.price;
