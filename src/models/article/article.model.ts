@@ -5,6 +5,7 @@ import { IArticle } from './article.interface';
 const ArticleSchema: Schema<IArticle> = new Schema({
   currency_id: String,
   id: { type: String, unique: true, required: true },
+  seller_id: Number,
   title: String,
   status: String,
   permalink: String,
