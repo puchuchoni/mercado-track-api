@@ -1,14 +1,24 @@
-export interface IMLArticle {
+export interface IBaseMLArticle {
   id: string;
   title: string;
   price: number;
   original_price: number|null;
   currency_id: string;
   thumbnail: string;
+}
+
+export interface IMLArticle extends IBaseMLArticle {
+  status: string;
+  seller_id: number;
   pictures: [{
     secure_url: string,
   }];
-  status: string;
+}
+
+export interface ISearchMLArticle extends IBaseMLArticle {
+  seller: {
+    id: number;
+  };
 }
 
 export interface IMLSearchResult {
@@ -18,7 +28,7 @@ export interface IMLSearchResult {
     offset: number;
     limit: number;
   };
-  results: IMLArticle[];
+  results: ISearchMLArticle[];
 }
 
 export interface IMLCategory {
