@@ -3,7 +3,7 @@ import mockdate from 'mockdate';
 import { expect } from 'chai';
 import { format, addDays } from 'date-fns';
 import { Article } from '../src/models';
-import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD } from './articles.mock';
+import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD, MLATEST_ARTICLES_SEARCH_RESULT } from './articles.mock';
 import { DBService } from '../src/services/db.service';
 
 const leanPrice = 123;
@@ -14,10 +14,12 @@ describe('DBService', () => {
   before(() => mongoose.connection.dropCollection('articles'));
 
   it('should insertMany articles', async () => {
-    await DBService.createArticles(baseArticles, 'category_id');
+    await DBService.createArticles(MLATEST_ARTICLES_SEARCH_RESULT, 'category_id');
     const articles = await Article.find();
     expect(articles.length).to.equal(3);
     expect(articles[0].images).to.be.empty;
+    expect(articles[0].seller_id).to.equal(123);
+    expect(articles[2].seller_id).to.equal(999);
   });
 
   it('should update lean and newly created articles', async () => {

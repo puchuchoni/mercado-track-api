@@ -2,15 +2,18 @@ import { ICategoryLean } from './../models/category/category.interface';
 import { Error } from 'mongoose';
 import { Snapshot, Article, Category } from '../models';
 import { IArticle } from '../models/article/article.interface';
-import { IMLArticle, IMLCategory } from '../interfaces';
+import { IMLArticle, ISearchMLArticle, IMLCategory } from '../interfaces';
 import { MLService } from './ml.service';
 import { logger } from '../shared';
 
 export class DBService {
-  public static createArticles(mlArticles: IMLArticle[], categoryId: string)
+  public static createArticles(mlArticles: ISearchMLArticle[], categoryId: string)
   : Promise<IArticle[]> {
-    const categoryReference = { category_id: categoryId };
-    const items = mlArticles.map(article => Object.assign({}, article, categoryReference));
+    const categoryInfo = { category_id: categoryId };
+    const items = mlArticles.map((article) => {
+      const sellerInfo = { seller_id: article.seller.id };
+      return Object.assign({}, article, sellerInfo, categoryInfo);
+    });
     return Article.insertMany(items, { ordered: false });
   }
 
@@ -23,6 +26,7 @@ export class DBService {
       article.images = mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url);
       article.status = mlArticle.status;
       article.title = mlArticle.title;
+      article.seller_id = mlArticle.seller_id;
       if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
         article.history.push(new Snapshot(mlArticle));
         article.price = mlArticle.price;

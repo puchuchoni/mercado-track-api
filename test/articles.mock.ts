@@ -1,7 +1,8 @@
-import { IMLArticle } from '../src/interfaces/ml.interfaces';
+import { IMLArticle, ISearchMLArticle } from '../src/interfaces/ml.interfaces';
 
 export const MLATEST_FIRST: IMLArticle = {
   id: 'MLATEST_FIRST',
+  title: 'First Title',
   original_price: null,
   pictures: [{
     secure_url: 'https://some-img/MLATEST_FIRST',
@@ -14,6 +15,7 @@ export const MLATEST_FIRST: IMLArticle = {
 
 export const MLATEST_SECOND: IMLArticle = {
   id: 'MLATEST_SECOND',
+  title: 'Second Title',
   original_price: null,
   pictures: [{
     secure_url: 'https://some-img/MLATEST_SECOND',
@@ -26,6 +28,7 @@ export const MLATEST_SECOND: IMLArticle = {
 
 export const MLATEST_THIRD: IMLArticle = {
   id: 'MLATEST_THIRD',
+  title: 'Third Title',
   original_price: null,
   pictures: [{
     secure_url: 'https://some-img/MLATEST_THIRD',
@@ -35,3 +38,24 @@ export const MLATEST_THIRD: IMLArticle = {
   thumbnail: 'www.thumbnail.com/MLATEST_THIRD',
   status: 'active',
 };
+
+export const MLATEST_ARTICLES_SEARCH_RESULT: ISearchMLArticle[] = [
+  {
+    ...MLATEST_FIRST,
+    seller: {
+      id: 123,
+    },
+  },
+  {
+    ...MLATEST_SECOND,
+    seller: {
+      id: 123,
+    },
+  },
+  {
+    ...MLATEST_THIRD,
+    seller: {
+      id: 999,
+    },
+  },
+];
