@@ -9,6 +9,7 @@ export interface IBaseMLArticle {
 
 export interface IMLArticle extends IBaseMLArticle {
   status: string;
+  seller_id: number;
   pictures: [{
     secure_url: string,
   }];

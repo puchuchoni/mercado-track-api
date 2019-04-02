@@ -26,6 +26,7 @@ export class DBService {
       article.images = mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url);
       article.status = mlArticle.status;
       article.title = mlArticle.title;
+      article.seller_id = mlArticle.seller_id;
       if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
         article.history.push(new Snapshot(mlArticle));
         article.price = mlArticle.price;
