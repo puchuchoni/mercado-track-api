@@ -5,7 +5,7 @@ import { IArticle } from '../models/article/article.interface';
 import { IMLArticle, ISearchMLArticle, IMLCategory } from '../interfaces';
 import { MLService } from './ml.service';
 import { logger } from '../shared';
-
+import { updateMTArticleFromMLArticle } from '../shared/utils';
 export class DBService {
   public static createArticles(mlArticles: ISearchMLArticle[], categoryId: string)
   : Promise<IArticle[]> {
@@ -22,15 +22,7 @@ export class DBService {
     articles.forEach(async (article, i) => {
       const mlArticle = mlArticles[i];
       if (!mlArticle) return; // skipping because request failed for this article
-      const lastSnapshot = article.history[article.history.length - 1];
-      article.images = mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url);
-      article.status = mlArticle.status;
-      article.title = mlArticle.title;
-      article.seller_id = mlArticle.seller_id;
-      if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
-        article.history.push(new Snapshot(mlArticle));
-        article.price = mlArticle.price;
-      }
+      updateMTArticleFromMLArticle(article, mlArticle);
       if (article.isModified()) {
         promises.push(article.save());
       }
@@ -39,13 +31,19 @@ export class DBService {
   }
 
   public static async followArticle(id: string) {
+    const mtArticle = await Article.findOne({ id }).exec();
     const mlArticle = await MLService.getArticle(id);
-    const final = {
-      ...mlArticle,
-      history: new Snapshot(mlArticle),
-      images: mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url),
-    };
-    return Article.create(final);
+    if (!mtArticle) {
+      const final = {
+        ...mlArticle,
+        history: new Snapshot(mlArticle),
+        images: mlArticle.pictures && mlArticle.pictures.map(pic => pic.secure_url),
+      };
+      return Article.create(final);
+    }
+
+    updateMTArticleFromMLArticle(mtArticle, mlArticle);
+    return mtArticle.save();
   }
 
   public static async paginateArticles({ search = '', skip = 0, limit = 200 }) {
