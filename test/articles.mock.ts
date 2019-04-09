@@ -73,7 +73,7 @@ export const MT_CHEAP: IArticle = {
   price: 240,
   thumbnail: 'www.thumbnail.com/MT_CHEAP',
   status: 'active',
-  history: [{ original_price: 200, price: 240, discount: 0, fluctuation: 0 }]
+  history: [{ original_price: 200, price: 240, fluctuation: 0 }]
 };
 
 export const MT_EXPENSIVE: IArticle = {
@@ -83,7 +83,7 @@ export const MT_EXPENSIVE: IArticle = {
   price: 360,
   thumbnail: 'www.thumbnail.com/T_EXPENSIVE',
   status: 'active',
-  history: [{ original_price: 300, price: 360, discount: 0, fluctuation: 0 }]
+  history: [{ original_price: 300, price: 360, fluctuation: 0 }]
 };
 
 export const MLATEST_ARTICLES_SEARCH_RESULT: ISearchMLArticle[] = [
