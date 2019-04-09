@@ -5,7 +5,7 @@ import { IArticle } from '../models/article/article.interface';
 import { IMLArticle, ISearchMLArticle, IMLCategory } from '../interfaces';
 import { MLService } from './ml.service';
 import { logger } from '../shared';
-import { updateMTArticleFromMLArticle } from '../shared/utils';
+import { updateMTArticleFromMLArticle } from '../shared/article.utils';
 export class DBService {
   public static createArticles(mlArticles: ISearchMLArticle[], categoryId: string)
   : Promise<IArticle[]> {
