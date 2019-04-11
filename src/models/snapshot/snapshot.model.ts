@@ -6,7 +6,7 @@ const SnapshotSchema: Schema<ISnapshot> = new Schema(
   {
     original_price: Number,
     price: Number,
-    discount: Number,
+    fluctuation: Number,
     date: {
       type: String,
       default: () => format(new Date(), 'DD/MM/YYYY'),
