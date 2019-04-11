@@ -5,8 +5,14 @@ if (!TEST_DB_URL) {
   throw new ReferenceError('TEST_DB_URL Needs to be defined');
 }
 
-mongoose.connect(TEST_DB_URL, { useNewUrlParser: true });
+before(async () => {
+  await mongoose.connect(TEST_DB_URL, { useNewUrlParser: true });
+});
 
-before(() => mongoose.connection.dropCollection('articles'));
-
-after(() => mongoose.connection.close());
+after(async () => {
+  const collections = await mongoose.connection.db.listCollections().toArray();
+  for (const { name } of collections) {
+    await mongoose.connection.dropCollection(name);
+  }
+  await mongoose.connection.close();
+});
