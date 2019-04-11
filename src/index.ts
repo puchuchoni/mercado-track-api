@@ -27,4 +27,4 @@ app.use('/sync', routes.syncRouter);
 app.listen(PORT);
 logger.info(`Mercado Track API running on port: ${PORT}`);
 
-Sync.run();
+// Sync.run();
