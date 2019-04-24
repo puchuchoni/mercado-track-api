@@ -8,6 +8,7 @@ export function updateMTArticleFromMLArticle(article: IArticle, mlArticle: IMLAr
   article.status = mlArticle.status;
   article.title = mlArticle.title;
   article.seller_id = mlArticle.seller_id;
+  if (!mlArticle.price) return;
   if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
     article.history.push(new Snapshot(mlArticle));
     if (article.history.length > 1) {
