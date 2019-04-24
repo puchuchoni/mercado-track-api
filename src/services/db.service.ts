@@ -6,6 +6,9 @@ import { IMLArticle, ISearchMLArticle, IMLCategory } from '../interfaces';
 import { MLService } from './ml.service';
 import { logger } from '../shared';
 import { updateMTArticleFromMLArticle } from '../shared/article.utils';
+
+type IArticleNullable = (IArticle|null);
+
 export class DBService {
   public static createArticles(mlArticles: ISearchMLArticle[], categoryId: string)
   : Promise<IArticle[]> {
@@ -17,14 +20,22 @@ export class DBService {
     return Article.insertMany(items, { ordered: false });
   }
 
-  public static async updateArticles(articles: IArticle[], mlArticles: IMLArticle[]): Promise<IArticle[]> {
-    const promises: Promise<IArticle>[] = [];
+  public static async updateArticles(articles: IArticle[], mlArticles: IMLArticle[]): Promise<(IArticleNullable)[]> {
+    const promises: Promise<IArticleNullable>[] = [];
     articles.forEach(async (article, i) => {
       const mlArticle = mlArticles[i];
       if (!mlArticle) return; // skipping because request failed for this article
       updateMTArticleFromMLArticle(article, mlArticle);
       if (article.isModified()) {
-        promises.push(article.save());
+        // TODO: make pretty
+        const promise = article
+          .save()
+          .catch((error) => {
+            logger.log({ id: article.id, error });
+            return error;
+          })
+          .then(() => null);
+        promises.push(promise);
       }
     });
     return Promise.all(promises);
