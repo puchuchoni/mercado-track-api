@@ -23,6 +23,7 @@ app.use(cors());
 app.use('/articles', routes.articleRouter);
 app.use('/collector', routes.collectorRouter);
 app.use('/sync', routes.syncRouter);
+app.use('/categories', routes.categoryRouter);
 
 app.listen(PORT);
 logger.info(`Mercado Track API running on port: ${PORT}`);

@@ -31,7 +31,7 @@ export class DBService {
         const promise = article
           .save()
           .catch((error) => {
-            logger.log({ id: article.id, error });
+            logger.log({ error, id: article.id });
             return error;
           })
           .then(() => null);
