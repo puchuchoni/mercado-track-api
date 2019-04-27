@@ -24,6 +24,7 @@ app.use('/articles', routes.articleRouter);
 app.use('/collector', routes.collectorRouter);
 app.use('/sync', routes.syncRouter);
 app.use('/categories', routes.categoryRouter);
+app.use('/sellers', routes.sellerRouter);
 
 app.listen(PORT);
 logger.info(`Mercado Track API running on port: ${PORT}`);

@@ -1,8 +1,8 @@
 import { ICategoryLean } from './../models/category/category.interface';
 import { Error } from 'mongoose';
-import { Snapshot, Article, Category } from '../models';
+import { Snapshot, Article, Seller, Category } from '../models';
 import { IArticle } from '../models/article/article.interface';
-import { IMLArticle, ISearchMLArticle, IMLCategory } from '../interfaces';
+import { IMLArticle, ISearchMLArticle, IMLCategory, IMLSeller } from '../interfaces';
 import { MLService } from './ml.service';
 import { logger } from '../shared';
 import { updateMTArticleFromMLArticle } from '../shared/article.utils';
@@ -18,6 +18,10 @@ export class DBService {
       return Object.assign({}, article, sellerInfo, categoryInfo);
     });
     return Article.insertMany(items, { ordered: false });
+  }
+
+  public static async addSellers(sellers: IMLSeller[]) {
+    return Seller.insertMany(sellers, { ordered: false });
   }
 
   public static async updateArticles(articles: IArticle[], mlArticles: IMLArticle[]): Promise<(IArticleNullable)[]> {

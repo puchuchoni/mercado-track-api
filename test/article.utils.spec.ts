@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { updateMTArticleFromMLArticle } from '../src/shared/article.utils';
-import { MT_CHEAP, ML_CHEAP, MT_EXPENSIVE, ML_EXPENSIVE } from './articles.mock';
+import { MT_CHEAP, ML_CHEAP, MT_EXPENSIVE, ML_EXPENSIVE } from './mocks/articles.mock';
 
 describe('Articles', () => {
   it('should have lower price', async () => {
@@ -16,5 +16,4 @@ describe('Articles', () => {
     updateMTArticleFromMLArticle(MT_CHEAP, ML_EXPENSIVE);
     expect(MT_CHEAP.history[MT_CHEAP.history.length - 1].fluctuation).to.equal(120);
   });
-
 });
