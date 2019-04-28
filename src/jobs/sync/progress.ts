@@ -1,4 +1,5 @@
 import { logger } from '../../shared';
+import { SlackService } from '../../services';
 
 export class Progress {
   public stopped: boolean;
@@ -6,10 +7,12 @@ export class Progress {
   private processed: number = 0;
   private total: number;
   private startDate: Date;
+  private jobName: string;
   private errors: {}[];
 
   constructor(totalArticles: number) {
     logger.info('Sync started');
+    this.jobName = 'Sync';
     this.total = totalArticles;
     this.startDate = new Date();
     this.errors = [];
@@ -32,18 +35,22 @@ export class Progress {
   }
 
   public finish() {
-    logger.info('Sync finished');
-    logger.info(this.data);
     this.running = false;
+    const data = this.data;
+    logger.info('Sync finished');
+    logger.info(data);
+    SlackService.jobProgressNotification(data);
   }
 
-  public get data () {
-    if (!this.running) return { msg: 'Not running' };
+  public get data (): IProgressData {
+    if (!this.running) return { status: 'Not running' };
     const timeRunning = this.formatTimeRunning;
     const percentage = Math.floor(this.processed * 100 / this.total);
     const etc = this.minutesETC;
     return {
       timeRunning,
+      jobName: this.jobName,
+      status: this.running ? 'running' : 'finished',
       etc: `${etc} minutes`,
       progress: `${percentage}% - ${this.processed}/${this.total} [${this.errors.length}] | ${timeRunning}/~${etc}min`,
       articlesProcessed: this.processed,

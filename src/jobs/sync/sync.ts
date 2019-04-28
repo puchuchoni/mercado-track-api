@@ -7,7 +7,6 @@ const limit = 200;
 let progress: Progress;
 
 export class Sync {
-
   public static async run () {
     let skip = 0;
     const documentCount = await Article.estimatedDocumentCount();

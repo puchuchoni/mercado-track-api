@@ -13,7 +13,9 @@ export function updateMTArticleFromMLArticle(article: IArticle, mlArticle: IMLAr
     if (article.history.length > 1) {
       const currentSnapshot = article.history[article.history.length - 1];
       const previousSnapshot = article.history[article.history.length - 2];
-      currentSnapshot.fluctuation = currentSnapshot.price - previousSnapshot.price;
+      if (currentSnapshot.price && previousSnapshot.price) {
+        currentSnapshot.fluctuation = currentSnapshot.price - previousSnapshot.price;
+      }
     }
     article.price = mlArticle.price;
   }

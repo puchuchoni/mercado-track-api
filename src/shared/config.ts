@@ -21,3 +21,4 @@ export const ML_CLIENT_ID = process.env.ML_CLIENT_ID;
 export const ML_CLIENT_SECRET = process.env.ML_CLIENT_SECRET;
 export const DB_URL = process.env.DB_URL;
 export const TEST_DB_URL = process.env.TEST_DB_URL;
+export const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
