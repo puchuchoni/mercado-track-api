@@ -1,5 +1,6 @@
 import { logger } from '../../shared';
 import { SlackService } from '../../services';
+import { JobStatus } from '../jobs.constants';
 
 export class Progress {
   private mainCategoriesProcessed: number = 1;
@@ -8,8 +9,8 @@ export class Progress {
   private childStepSize: number;
   private totalMainCategories: number;
   private startDate: Date;
+  private status: string;
   private jobName: string;
-  private running: boolean;
   private errors: {}[];
 
   constructor(mainTotal, secondaryTotal = 1) {
@@ -18,7 +19,7 @@ export class Progress {
     this.totalMainCategories = mainTotal;
     this.childStepSize = Math.round(100 / secondaryTotal);
     this.startDate = new Date();
-    this.running = true;
+    this.status = JobStatus.Running;
     this.errors = [];
   }
 
@@ -51,7 +52,7 @@ export class Progress {
   }
 
   public finish() {
-    this.running = false;
+    this.status = JobStatus.Finished;
     const data = this.data;
     logger.info('Collector finished');
     logger.info(data);
@@ -67,7 +68,7 @@ export class Progress {
     return {
       timeRunning,
       jobName: this.jobName,
-      status: this.running ? 'running' : 'finished',
+      status: this.status,
       progress: `${main} - ${child} - ${articles}, ${errors}`,
       articlesProcessed: this.articlesProcessed,
       errorsCount: this.errors.length,
