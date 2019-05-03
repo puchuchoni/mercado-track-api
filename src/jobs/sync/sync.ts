@@ -7,7 +7,6 @@ const limit = 200;
 let progress: Progress;
 
 export class Sync {
-
   public static async run () {
     let skip = 0;
     const documentCount = await Article.estimatedDocumentCount();
@@ -15,7 +14,7 @@ export class Sync {
     try {
       let { articles } = await DBService.paginateArticles({ limit });
       while (articles.length) {
-        if (progress.stopped) {
+        if (progress.isStopped()) {
           progress.finish();
           return; // progress has been stopped so we return from the infinite loop
         }

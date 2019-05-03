@@ -66,6 +66,15 @@ describe('DBService', () => {
       });
     }
   });
+
+  it('should parse the search query correctly', () => {
+    const query = 'some text "with quotes" somewhere';
+    expect(DBService.parseSearchQuery(query))
+      .to.be.an('array')
+      .and.to.have.members(['"somewhere"', '"text"', '"with quotes"', '"some"']) // with quotes
+      .and.not.to.have.members(['somewhere', 'text', 'with quotes', 'some']); // without quotes
+  });
+  
   it('should add sellers correctly', async () => {
     await DBService.addSellers([SELLER_FIRST, SELLER_FIRST, SELLER_FIRST, SELLER_SECOND]).catch(() => {
       // silent fail

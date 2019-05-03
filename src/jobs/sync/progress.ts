@@ -1,20 +1,22 @@
 import { logger } from '../../shared';
+import { SlackService } from '../../services';
+import { JobStatus } from '../jobs.constants';
 
 export class Progress {
-  public stopped: boolean;
-  public running: boolean;
   private processed: number = 0;
   private total: number;
   private startDate: Date;
+  private jobName: string;
   private errors: {}[];
+  private status: string;
 
   constructor(totalArticles: number) {
     logger.info('Sync started');
+    this.jobName = 'Sync';
     this.total = totalArticles;
     this.startDate = new Date();
     this.errors = [];
-    this.stopped = false;
-    this.running = true;
+    this.status = JobStatus.Running;
   }
 
   public step(length: number = 1) {
@@ -31,19 +33,27 @@ export class Progress {
     }
   }
 
-  public finish() {
-    logger.info('Sync finished');
-    logger.info(this.data);
-    this.running = false;
+  public isStopped() {
+    return this.status === JobStatus.Stopped;
   }
 
-  public get data () {
-    if (!this.running) return { msg: 'Not running' };
+  public finish() {
+    this.status = JobStatus.Finished;
+    const data = this.data;
+    logger.info('Sync finished');
+    logger.info(data);
+    SlackService.jobProgressNotification(data);
+    this.status = JobStatus.NotRunning;
+  }
+
+  public get data (): IProgressData {
     const timeRunning = this.formatTimeRunning;
     const percentage = Math.floor(this.processed * 100 / this.total);
     const etc = this.minutesETC;
     return {
       timeRunning,
+      jobName: this.jobName,
+      status: this.status,
       etc: `${etc} minutes`,
       progress: `${percentage}% - ${this.processed}/${this.total} [${this.errors.length}] | ${timeRunning}/~${etc}min`,
       articlesProcessed: this.processed,
@@ -53,11 +63,10 @@ export class Progress {
   }
 
   public stop () {
-    this.stopped = true;
+    this.status = JobStatus.Stopped;
     return new Promise((resolve) => {
       const interval = setInterval(() => {
-        if (!this.running) {
-          this.stopped = false;
+        if (this.status !== JobStatus.Running) {
           clearInterval(interval);
           resolve();
         }
