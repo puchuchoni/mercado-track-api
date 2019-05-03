@@ -2,8 +2,9 @@ import mongoose from 'mongoose';
 import mockdate from 'mockdate';
 import { expect } from 'chai';
 import { format, addDays } from 'date-fns';
-import { Article } from '../src/models';
-import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD, MLATEST_ARTICLES_SEARCH_RESULT } from './articles.mock';
+import { Article, Seller } from '../src/models';
+import { MLATEST_FIRST, MLATEST_SECOND, MLATEST_THIRD, MLATEST_ARTICLES_SEARCH_RESULT } from './mocks/articles.mock';
+import { SELLER_FIRST, SELLER_SECOND } from './mocks/sellers.mock';
 import { DBService } from '../src/services/db.service';
 
 const leanPrice = 123;
@@ -65,11 +66,22 @@ describe('DBService', () => {
       });
     }
   });
+
   it('should parse the search query correctly', () => {
     const query = 'some text "with quotes" somewhere';
     expect(DBService.parseSearchQuery(query))
       .to.be.an('array')
       .and.to.have.members(['"somewhere"', '"text"', '"with quotes"', '"some"']) // with quotes
       .and.not.to.have.members(['somewhere', 'text', 'with quotes', 'some']); // without quotes
+  });
+  
+  it('should add sellers correctly', async () => {
+    await DBService.addSellers([SELLER_FIRST, SELLER_FIRST, SELLER_FIRST, SELLER_SECOND]).catch(() => {
+      // silent fail
+    });
+    const sellers = await Seller.find();
+    expect(sellers.length).to.equal(2);
+    expect(sellers.slice().shift().id).to.equal(SELLER_FIRST.id);
+    expect(sellers.slice().pop().id).to.equal(SELLER_SECOND.id);
   });
 });

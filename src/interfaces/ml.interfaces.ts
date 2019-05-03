@@ -11,7 +11,7 @@ export interface IMLArticle extends IBaseMLArticle {
   status: string;
   seller_id: number;
   pictures: [{
-    secure_url: string,
+    secure_url: string;
   }];
 }
 
@@ -19,6 +19,11 @@ export interface ISearchMLArticle extends IBaseMLArticle {
   seller: {
     id: number;
   };
+}
+
+export interface IMLSeller {
+  id: number;
+  nickname: string;
 }
 
 export interface IMLSearchResult {

@@ -2,6 +2,7 @@ import { DBService, MLService } from '../../services';
 import { MainCategories } from '../../constants';
 import { Progress } from './progress';
 import { Sync } from './../sync';
+import { IMLSearchResult } from '../../interfaces/ml.interfaces';
 
 const limit = 50;
 const maxOffset = 10000;
@@ -58,7 +59,8 @@ export class Collector {
     try {
       const offset = pageNumber * limit;
       page = await MLService.searchByCategory({ categoryId, offset, limit });
-      await DBService.createArticles(page.results, categoryId);
+      await this.createArticles(page, categoryId);
+      await this.addSellers(page);
       progress.pageStep(page.results.length);
     } catch (error) {
       // todo: add # of new articles vs already existing articles
@@ -67,4 +69,20 @@ export class Collector {
     }
   }
 
+  private static async createArticles(page: IMLSearchResult, categoryId: string) {
+    DBService.createArticles(page.results, categoryId).catch(() => {
+      // silent errors to continue execution
+    });
+  }
+
+  private static async addSellers(page: IMLSearchResult) {
+    try {
+      const sellersSet = new Set(page.results.map(article => article.seller.id));
+      const sellersPromises = Array.from(sellersSet).map(MLService.getSeller);
+      const sellers = await Promise.all(sellersPromises);
+      return DBService.addSellers(sellers);
+    } catch (err) {
+      // silent errors to continue execution
+    }
+  }
 }

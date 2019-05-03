@@ -5,6 +5,7 @@ export const MLATEST_FIRST: IMLArticle = {
   id: 'MLATEST_FIRST',
   title: 'First Title',
   original_price: null,
+  seller_id: 9999,
   pictures: [{
     secure_url: 'https://some-img/MLATEST_FIRST',
   }],
@@ -17,6 +18,7 @@ export const MLATEST_FIRST: IMLArticle = {
 export const MLATEST_SECOND: IMLArticle = {
   id: 'MLATEST_SECOND',
   title: 'Second Title',
+  seller_id: 2222,
   original_price: null,
   pictures: [{
     secure_url: 'https://some-img/MLATEST_SECOND',
@@ -30,6 +32,7 @@ export const MLATEST_SECOND: IMLArticle = {
 export const MLATEST_THIRD: IMLArticle = {
   id: 'MLATEST_THIRD',
   title: 'Third Title',
+  seller_id: 9999,
   original_price: null,
   pictures: [{
     secure_url: 'https://some-img/MLATEST_THIRD',

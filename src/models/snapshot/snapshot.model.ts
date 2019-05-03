@@ -5,7 +5,10 @@ import { ISnapshot } from './snapshot.interface';
 const SnapshotSchema: Schema<ISnapshot> = new Schema(
   {
     original_price: Number,
-    price: Number,
+    price: {
+      type: Number,
+      required: true,
+    },
     fluctuation: Number,
     date: {
       type: String,
