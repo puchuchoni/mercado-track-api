@@ -1,5 +1,6 @@
-import { ICategoryLean } from './../models/category/category.interface';
 import { Error } from 'mongoose';
+import splitargs from 'splitargs';
+import { ICategoryLean } from './../models/category/category.interface';
 import { Snapshot, Article, Category } from '../models';
 import { IArticle } from '../models/article/article.interface';
 import { IMLArticle, ISearchMLArticle, IMLCategory } from '../interfaces';
@@ -50,11 +51,11 @@ export class DBService {
     if (limit > 1000) {
       return Promise.reject(new Error('Using a limit higher than 1k is not allowed.'));
     }
-    const query = search ? { $text: { $search: search } } : {};
+    const query = search ? { $text: { $search: this.parseSearchQuery(search) } } : {};
     try {
-      const articles = await Article.find(query, null, { skip, limit }).exec();
+      const articles = await Article.find(query, null, { skip, limit });
       const total = search
-        ? await Article.find(query).count().exec()
+        ? await Article.find(query).count()
         : await Article.estimatedDocumentCount();
       return { articles, total };
     } catch (err) {
@@ -78,5 +79,9 @@ export class DBService {
     } catch (err) {
       logger.log(`Couldn't save category ${category.id}`, err.errmsg);
     }
+  }
+
+  public static parseSearchQuery (query): string[] {
+    return splitargs(query).map(str => `"${str}"`);
   }
 }

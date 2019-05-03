@@ -38,6 +38,7 @@
     "dotenv": "^6.2.0",
     "express": "^4.16.3",
     "mongoose": "^5.3.0",
+    "splitargs": "0.0.7",
     "winston": "2.4.0",
     "winston-loggly-bulk": "^2.0.3"
   },
