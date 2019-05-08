@@ -62,7 +62,7 @@ export class DBService {
     return mtArticle.save();
   }
 
-  public static async paginateArticles({ search = '', skip = 0, limit = 200, category }) {
+  public static async paginateArticles({ search = '', skip = 0, limit = 200, category = '' }) {
     if (limit > 1000) {
       return Promise.reject(new Error('Using a limit higher than 1k is not allowed.'));
     }
