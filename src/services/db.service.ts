@@ -62,11 +62,19 @@ export class DBService {
     return mtArticle.save();
   }
 
-  public static async paginateArticles({ search = '', skip = 0, limit = 200 }) {
+  public static async paginateArticles({ search = '', skip = 0, limit = 200, category }) {
     if (limit > 1000) {
       return Promise.reject(new Error('Using a limit higher than 1k is not allowed.'));
     }
-    const query = search ? { $text: { $search: this.parseSearchQuery(search) } } : {};
+    // TODO: this should be in some utils or another function for query building
+    const query: any = {};
+    const categories = await this.getSubcategories(category);
+    if (search) {
+      query.$text = { $search: this.parseSearchQuery(search) };
+    }
+    if (categories.length) {
+      query.category_id = { $in: categories };
+    }
     try {
       const articles = await Article.find(query, null, { skip, limit });
       const total = search
@@ -98,5 +106,12 @@ export class DBService {
 
   public static parseSearchQuery (query): string[] {
     return splitargs(query).map(str => `"${str}"`);
+  }
+
+  public static async getSubcategories (category: string): Promise<string[]> {
+    if (!category) return [];
+    const categories = [category];
+    const subCategories = await Category.find({ parent: category }, { _id: 1 });
+    return [...categories, ...subCategories.map(subCategory => subCategory._id)];
   }
 }
