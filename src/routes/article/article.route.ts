@@ -25,12 +25,14 @@ async function articlesGetMany(req: express.Request, res: express.Response) {
     }
     const {
       search,
+      category,
       skip = DefaultQueryParams.Skip,
       limit = DefaultQueryParams.Limit,
     } = req.query;
 
     const { articles, total } = await DBService.paginateArticles({
       search,
+      category,
       skip: +skip,
       limit: +limit,
     });
