@@ -9,6 +9,7 @@ export function updateMTArticleFromMLArticle(article: IArticle, mlArticle: IMLAr
   article.title = mlArticle.title;
   article.seller_id = mlArticle.seller_id;
   if (!mlArticle.price) return;
+  article.price = mlArticle.price;
   if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
     article.history.push(new Snapshot(mlArticle));
     if (article.history.length > 1) {
@@ -18,6 +19,5 @@ export function updateMTArticleFromMLArticle(article: IArticle, mlArticle: IMLAr
         currentSnapshot.fluctuation = currentSnapshot.price - previousSnapshot.price;
       }
     }
-    article.price = mlArticle.price;
   }
 }
