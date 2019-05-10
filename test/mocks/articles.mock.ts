@@ -89,6 +89,20 @@ export const MT_EXPENSIVE: IArticle = {
   history: [{ original_price: 300, price: 360, fluctuation: 0 }]
 };
 
+export const MT_NO_IMAGES_AND_PAUSED_SEARCH_RESULT = {
+  id: 'MT_NO_IMAGES_AND_PAUSED',
+  title: 'Expensive Title',
+  original_price: null,
+  currency_id: 'ARS',
+  price: 360,
+  thumbnail: 'www.thumbnail.com/MT_NO_IMAGES_AND_PAUSED',
+  status: 'paused',
+  seller: {
+    id: 999,
+  },
+  history: [{ original_price: 300, price: 360, fluctuation: 0 }]
+};
+
 export const MLATEST_ARTICLES_SEARCH_RESULT: ISearchMLArticle[] = [
   {
     ...MLATEST_FIRST,
