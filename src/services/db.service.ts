@@ -1,3 +1,4 @@
+import { ArticleStatus } from './../models/article/article.constants';
 import { Error } from 'mongoose';
 import splitargs from 'splitargs';
 import { ICategoryLean } from './../models/category/category.interface';
@@ -74,6 +75,12 @@ export class DBService {
     if (params.category) {
       const categories = await this.getSubcategories(params.category);
       query.category_id = { $in: categories };
+    }
+    if (params.pretty) {
+      // getting "pretty" articles
+      // => filtering for the ones that have images & are active
+      query.images = { $ne: [] };
+      query.status = ArticleStatus.Active;
     }
     try {
       const articles = await Article.find(query, null, { skip, limit });
