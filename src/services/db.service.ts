@@ -1,3 +1,4 @@
+import { ArticleStatus } from './../models/article/article.constants';
 import { Error } from 'mongoose';
 import splitargs from 'splitargs';
 import { ICategoryLean } from './../models/category/category.interface';
@@ -62,22 +63,28 @@ export class DBService {
     return mtArticle.save();
   }
 
-  public static async paginateArticles({ search = '', skip = 0, limit = 200, category = '' }) {
+  public static async paginateArticles({ skip = 0, limit = 200, ...params }) {
     if (limit > 1000) {
       return Promise.reject(new Error('Using a limit higher than 1k is not allowed.'));
     }
     // TODO: this should be in some utils or another function for query building
     const query: any = {};
-    const categories = await this.getSubcategories(category);
-    if (search) {
-      query.$text = { $search: this.parseSearchQuery(search) };
+    if (params.search) {
+      query.$text = { $search: this.parseSearchQuery(params.search) };
     }
-    if (categories.length) {
+    if (params.category) {
+      const categories = await this.getSubcategories(params.category);
       query.category_id = { $in: categories };
+    }
+    if (params.pretty) {
+      // getting "pretty" articles
+      // => filtering for the ones that have images & are active
+      query.images = { $ne: [] };
+      query.status = ArticleStatus.Active;
     }
     try {
       const articles = await Article.find(query, null, { skip, limit });
-      const total = search
+      const total = params.search
         ? await Article.find(query).count()
         : await Article.estimatedDocumentCount();
       return { articles, total };

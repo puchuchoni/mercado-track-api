@@ -19,20 +19,16 @@ articleRouter.route('/:id')
 
 async function articlesGetMany(req: express.Request, res: express.Response) {
   try {
-    const error = validateParams(req.query);
-    if (error) {
-      return res.status(Status.BadRequest).send({ error });
-    }
     const {
-      search,
-      category,
       skip = DefaultQueryParams.Skip,
       limit = DefaultQueryParams.Limit,
     } = req.query;
-
+    const error = validateParams({ skip, limit });
+    if (error) {
+      return res.status(Status.BadRequest).send({ error });
+    }
     const { articles, total } = await DBService.paginateArticles({
-      search,
-      category,
+      ...req.query,
       skip: +skip,
       limit: +limit,
     });
