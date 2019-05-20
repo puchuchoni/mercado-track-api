@@ -76,6 +76,19 @@ export class DBService {
       const categories = await this.getSubcategories(params.category);
       query.category_id = { $in: categories };
     }
+    if (params.priceMin || params.priceMax) {
+      query.price = {};
+      if (params.priceMin === params.priceMax) {
+        query.price.$eq = params.priceMin;
+      } else {
+        if (params.priceMin) {
+          query.price.$gt = params.priceMin;
+        }
+        if (params.priceMax) {
+          query.price.$lt = params.priceMax;
+        }
+      }
+    }
     if (params.pretty) {
       // getting "pretty" articles
       // => filtering for the ones that have images & are active
@@ -84,7 +97,7 @@ export class DBService {
     }
     try {
       const articles = await Article.find(query, null, { skip, limit });
-      const total = params.search
+      const total = Object.keys(params).length
         ? await Article.find(query).count()
         : await Article.estimatedDocumentCount();
       return { articles, total };
