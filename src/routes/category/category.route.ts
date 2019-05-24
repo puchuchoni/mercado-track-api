@@ -4,7 +4,7 @@ import { Status } from '../article/article.constants';
 import { CategoryRouteService } from './category.route.service';
 
 const cache = new Cache();
-const cacheTime = 5 * 60 * 60 * 1000; // 5 hrs
+const cacheTime = 24 * 60 * 60 * 1000; // 24 hrs
 const CATEGORY_KEY = 'CATEGORIES';
 
 export const categoryRouter = express.Router();
