@@ -7,7 +7,10 @@ export class CategoryRouteService {
   public static async getCategoriesAggregated () {
     const categories = await Category.find({}, { __v: 0 }).lean();
     const aggregations = await Promise.all(
-      categories.map(CategoryRouteService.getAggregation),
+      categories.map((category) => {
+        const children = categories.filter(child => child.parent === category._id).map(child => child._id);
+        return CategoryRouteService.getAggregation(category, children);
+      }),
     );
     for (let i = 0; i < aggregations.length; i++) {
       Object.assign(categories[i], aggregations[i]);
@@ -15,19 +18,26 @@ export class CategoryRouteService {
     return categories;
   }
 
-  private static async getAggregation (category) {
+  private static async getAggregation (category, children) {
     const articleCount = await Article.estimatedDocumentCount({ category_id: category._id });
     if (category.parent) {
       return { articleCount };
     }
-    const samples = await Article.aggregate(CategoryRouteService.samplesAggregation(category._id));
+    const samples = await Article.aggregate(CategoryRouteService.samplesAggregation(category._id, children));
     return { articleCount, samples };
   }
 
-  private static samplesAggregation (id) {
+  private static samplesAggregation (id, children) {
     return [
       // matching articles
-      { $match: { category_id: id, status: 'active' } },
+      {
+        $match: {
+          status: 'active',
+          $expr: {
+            $in: ['$category_id', children],
+          },
+        },
+      },
       // taking 4 samples
       { $sample: { size: CategoryRouteService.sampleSize } },
       // only need 1 image, taking the first one
