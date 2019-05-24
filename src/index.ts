@@ -1,10 +1,11 @@
+import { addCategoryToArticlesWithNoCategory } from './script';
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import { DB_URL, PORT } from './shared/config';
 import * as routes from './routes';
-import { Sync } from './jobs/sync';
+// import { Sync } from './jobs/sync';
 import logger from './shared/logger';
 
 if (!DB_URL) {
@@ -29,4 +30,6 @@ app.use('/sellers', routes.sellerRouter);
 app.listen(PORT);
 logger.info(`Mercado Track API running on port: ${PORT}`);
 
-Sync.run();
+// Sync.run();
+
+addCategoryToArticlesWithNoCategory();
