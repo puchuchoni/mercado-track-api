@@ -98,7 +98,7 @@ export class DBService {
     try {
       const articles = await Article.find(query, null, { skip, limit });
       const total = Object.keys(params).length
-        ? await Article.find(query).count()
+        ? await Article.find(query).countDocuments()
         : await Article.estimatedDocumentCount();
       return { articles, total };
     } catch (err) {

@@ -7,7 +7,10 @@ export class CategoryRouteService {
   public static async getCategoriesAggregated () {
     const categories = await Category.find({}, { __v: 0 }).lean();
     const aggregations = await Promise.all(
-      categories.map(CategoryRouteService.getAggregation),
+      categories.map((category) => {
+        const children = categories.filter(child => child.parent === category._id).map(child => child._id);
+        return this.getAggregation(category, children);
+      }),
     );
     for (let i = 0; i < aggregations.length; i++) {
       Object.assign(categories[i], aggregations[i]);
@@ -15,21 +18,31 @@ export class CategoryRouteService {
     return categories;
   }
 
-  private static async getAggregation (category) {
-    const articleCount = await Article.estimatedDocumentCount({ category_id: category._id });
+  private static async getAggregation (category, children) {
     if (category.parent) {
+      const articleCount = await Article.find({ category_id: category._id }).countDocuments();
       return { articleCount };
     }
-    const samples = await Article.aggregate(CategoryRouteService.samplesAggregation(category._id));
-    return { articleCount, samples };
+    const samples = await Article.aggregate(this.samplesAggregation(children));
+    return { samples };
   }
 
-  private static samplesAggregation (id) {
+  private static samplesAggregation (children) {
     return [
       // matching articles
-      { $match: { category_id: id, status: 'active' } },
+      {
+        $match: {
+          status: 'active',
+          category_id: {
+            $exists: true,
+          },
+          $expr: {
+            $in: ['$category_id', children],
+          },
+        },
+      },
       // taking 4 samples
-      { $sample: { size: CategoryRouteService.sampleSize } },
+      { $sample: { size: this.sampleSize } },
       // only need 1 image, taking the first one
       { $addFields: { image: { $arrayElemAt: ['$images', 0] } } },
       // removing unnecessary fields
