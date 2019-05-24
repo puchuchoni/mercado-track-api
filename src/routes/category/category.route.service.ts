@@ -9,7 +9,7 @@ export class CategoryRouteService {
     const aggregations = await Promise.all(
       categories.map((category) => {
         const children = categories.filter(child => child.parent === category._id).map(child => child._id);
-        return CategoryRouteService.getAggregation(category, children);
+        return this.getAggregation(category, children);
       }),
     );
     for (let i = 0; i < aggregations.length; i++) {
@@ -19,27 +19,30 @@ export class CategoryRouteService {
   }
 
   private static async getAggregation (category, children) {
-    const articleCount = await Article.estimatedDocumentCount({ category_id: category._id });
     if (category.parent) {
+      const articleCount = await Article.find({ category_id: category._id }).countDocuments();
       return { articleCount };
     }
-    const samples = await Article.aggregate(CategoryRouteService.samplesAggregation(category._id, children));
-    return { articleCount, samples };
+    const samples = await Article.aggregate(this.samplesAggregation(children));
+    return { samples };
   }
 
-  private static samplesAggregation (id, children) {
+  private static samplesAggregation (children) {
     return [
       // matching articles
       {
         $match: {
           status: 'active',
+          category_id: {
+            $exists: true,
+          },
           $expr: {
             $in: ['$category_id', children],
           },
         },
       },
       // taking 4 samples
-      { $sample: { size: CategoryRouteService.sampleSize } },
+      { $sample: { size: this.sampleSize } },
       // only need 1 image, taking the first one
       { $addFields: { image: { $arrayElemAt: ['$images', 0] } } },
       // removing unnecessary fields
