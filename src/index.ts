@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { DB_URL, PORT } from './shared/config';
 import * as routes from './routes';
+import { CacheService } from './services';
 import { Sync } from './jobs/sync';
 import logger from './shared/logger';
 
@@ -29,4 +30,5 @@ app.use('/sellers', routes.sellerRouter);
 app.listen(PORT);
 logger.info(`Mercado Track API running on port: ${PORT}`);
 
+CacheService.init();
 Sync.run();
