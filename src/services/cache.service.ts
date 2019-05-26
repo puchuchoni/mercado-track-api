@@ -11,7 +11,7 @@ enum CATEGORY {
 class CacheService {
 
   private categoriesCache = new Cache();
-  private categoriesCron = new CronJob(CATEGORY.CRON_TIME, this.getAndCacheCategories);
+  private categoriesCron = new CronJob(CATEGORY.CRON_TIME, () => this.cacheCategories());
 
   public async init () {
     this.initCategories();
@@ -19,10 +19,10 @@ class CacheService {
 
   private initCategories () {
     this.categoriesCron.start();
-    this.getAndCacheCategories();
+    this.cacheCategories();
   }
 
-  private async getAndCacheCategories () {
+  private async cacheCategories () {
     const categories = await CategoryRouteService.getCategoriesAggregated();
     this.categoriesCache.put(CATEGORY.KEY, categories, CATEGORY.CACHE_TIME);
   }
