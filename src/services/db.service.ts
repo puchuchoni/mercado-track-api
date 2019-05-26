@@ -1,4 +1,4 @@
-import { ArticleStatus } from './../models/article/article.constants';
+import { ArticleStatus, ArticleTags } from './../models/article/article.constants';
 import { Error } from 'mongoose';
 import splitargs from 'splitargs';
 import { ICategoryLean } from './../models/category/category.interface';
@@ -91,9 +91,17 @@ export class DBService {
     }
     if (params.pretty) {
       // getting "pretty" articles
-      // => filtering for the ones that have images & are active
+      // => filtering for the ones that have good images & are active
       query.images = { $ne: [] };
+      query.tags = ArticleTags.Good_Quality_Picture; // if query comes with tags this will be overwritten
       query.status = ArticleStatus.Active;
+    }
+    if (params.status) {
+      query.status = params.status;
+    }
+    if (params.tags) {
+      // assuming structure to be ?tags=tag_1,tag_2,tag_3
+      query.tags = { $all: params.tags.split(',') };
     }
     try {
       const articles = await Article.find(query, null, { skip, limit });
