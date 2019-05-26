@@ -5,6 +5,7 @@ export interface IBaseMLArticle {
   original_price: number|null;
   currency_id: string;
   thumbnail: string;
+  tags: string[];
 }
 
 export interface IMLArticle extends IBaseMLArticle {

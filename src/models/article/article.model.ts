@@ -13,6 +13,7 @@ const ArticleSchema: Schema<IArticle> = new Schema({
   images: [String],
   price: Number,
   category_id: String,
+  tags: [String],
   history: [Snapshot.schema],
 });
 

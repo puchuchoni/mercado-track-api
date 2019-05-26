@@ -12,5 +12,6 @@ export interface IArticle extends Document {
   thumbnail: string;
   images: string[];
   category_id: string;
+  tags: string[];
   history: ISnapshot[];
 }
