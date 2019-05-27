@@ -1,4 +1,5 @@
 import { Category, Article } from '../../models';
+import { ArticleTags } from '../../models/article/article.constants';
 
 export class CategoryRouteService {
 
@@ -33,8 +34,12 @@ export class CategoryRouteService {
       {
         $match: {
           status: 'active',
+          tags: ArticleTags.Good_Quality_Picture,
           category_id: {
             $exists: true,
+          },
+          images: {
+            $ne: [],
           },
           $expr: {
             $in: ['$category_id', children],
