@@ -11,10 +11,10 @@ export function updateMTArticleFromMLArticle(article: IArticle, mlArticle: IMLAr
   article.tags = mlArticle.tags;
   if (!mlArticle.price) return;
   article.price = mlArticle.price;
-  if (!lastSnapshot || mlArticle.price !== lastSnapshot.price) {
-    article.history.push(new Snapshot(mlArticle));
+  if (shouldAddSnapshot(lastSnapshot, mlArticle)) {
+    const currentSnapshot = new Snapshot(mlArticle);
+    article.history.push(currentSnapshot);
     if (article.history.length > 1) {
-      const currentSnapshot = article.history[article.history.length - 1];
       const previousSnapshot = article.history[article.history.length - 2];
       if (currentSnapshot.price && previousSnapshot.price) {
         currentSnapshot.fluctuation = currentSnapshot.price - previousSnapshot.price;
@@ -22,3 +22,9 @@ export function updateMTArticleFromMLArticle(article: IArticle, mlArticle: IMLAr
     }
   }
 }
+
+const shouldAddSnapshot = (lastSnapshot, mlArticle) => {
+  return !lastSnapshot
+    || mlArticle.price !== lastSnapshot.price
+    || mlArticle.original_price !== lastSnapshot.original_price;
+};
