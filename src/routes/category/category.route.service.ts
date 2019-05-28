@@ -60,7 +60,6 @@ export class CategoryRouteService {
           seller_id: 0,
           status: 0,
           images: 0,
-          history: 0,
           permalink: 0,
         },
       },
